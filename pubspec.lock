@@ -193,6 +193,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.1"
+  dio:
+    dependency: "direct main"
+    description:
+      name: dio
+      sha256: "9fdbf71baeb250fc9da847f6cb2052196f62c19906a3657adfc18631a667d316"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.0"
   equatable:
     dependency: "direct main"
     description:
@@ -201,6 +209,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.5"
+  event_bus:
+    dependency: transitive
+    description:
+      name: event_bus
+      sha256: "44baa799834f4c803921873e7446a2add0f3efa45e101a054b1f0ab9b95f8edc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -251,22 +267,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  freezed:
-    dependency: "direct dev"
-    description:
-      name: freezed
-      sha256: e819441678f1679b719008ff2ff0ef045d66eed9f9ec81166ca0d9b02a187454
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.2"
-  freezed_annotation:
-    dependency: "direct main"
-    description:
-      name: freezed_annotation
-      sha256: aeac15850ef1b38ee368d4c53ba9a847e900bb2c53a4db3f6881cbb3cb684338
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.0"
   frontend_server_client:
     dependency: transitive
     description:
@@ -411,6 +411,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.3.2"
+  mqtt_client:
+    dependency: "direct main"
+    description:
+      name: mqtt_client
+      sha256: f9c8f9179031f34e6ec2b07485e9f4db5921d6b32d83462618fa1e93ad1c6743
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.7.4"
   nested:
     dependency: transitive
     description:
