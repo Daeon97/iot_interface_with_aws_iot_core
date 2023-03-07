@@ -19,6 +19,7 @@ dependencies:
   hydrated_bloc: ^9.1.0
   mqtt_client: ^9.7.4
   dio: ^5.0.0
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -31,3 +32,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env
