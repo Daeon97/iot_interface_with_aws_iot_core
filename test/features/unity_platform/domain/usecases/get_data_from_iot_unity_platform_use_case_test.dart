@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
@@ -15,7 +13,6 @@ import 'get_data_from_iot_unity_platform_use_case_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<IotUnityPlatformRepository>(),
 ])
-
 void main() {
   late MockIotUnityPlatformRepository mockIotUnityPlatformRepository;
   late GetDataFromIotUnityPlatformUseCase getDataFromIotUnityPlatformUseCase;
@@ -39,7 +36,10 @@ void main() {
   const testTopicName = 'topic/name';
 
   test(
-    'should ensure that [GetDataFromIotUnityPlatformUseCase] implements the [UseCase] interface with [IotUnityPlatformEntity] as generic',
+    '''
+      should ensure that [GetDataFromIotUnityPlatformUseCase] implements the'
+      [UseCase] interface with [IotUnityPlatformEntity] as generic
+    ''',
     () {
       expect(
         getDataFromIotUnityPlatformUseCase,
@@ -49,7 +49,10 @@ void main() {
   );
 
   test(
-    'should return a [Future] containing [IotUnityPlatformEntity] when GetDataFromIotUnityPlatformUseCase.call() is called',
+    '''
+      should return a [Future] containing [IotUnityPlatformEntity] when
+      GetDataFromIotUnityPlatformUseCase.call() is called
+    ''',
     () async {
       final expectedAnswer = Future.value(
         const Right<Failure, IotUnityPlatformEntity>(
