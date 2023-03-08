@@ -7,5 +7,7 @@ import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/doma
 abstract class IotUnityPlatformRepository {
   const IotUnityPlatformRepository();
 
-  Future<Either<Failure, IotUnityPlatformEntity>> getDataFromIotUnityPlatform();
+  Future<Either<Failure, IotUnityPlatformEntity>> getDataFromIotUnityPlatform({
+    required String topicName,
+  });
 }

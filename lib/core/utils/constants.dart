@@ -5,4 +5,4 @@ const defaultScreenRoute = '/';
 const homeScreenRoute = '/home';
 
 // environment variable keys
-const iotUnityPlatformChannelName = 'IOT_UNITY_PLATFORM_CHANNEL_NAME';
+const iotUnityPlatformTopicNameKey = 'IOT_UNITY_PLATFORM_TOPIC_NAME';

@@ -1,12 +1,9 @@
 // ignore_for_file: public_member_api_docs
 
-import 'package:mqtt_client/mqtt_client.dart';
-
-// clean up this abstract class tomorrow
-abstract class MqttClient<T> {
+abstract class MqttClient<ConnectionStatus, Qos, Message> {
   const MqttClient();
 
-  Future<MqttClientConnectionStatus> connectToBroker({
+  Future<ConnectionStatus> connectToBroker({
     String? username,
     String? password,
   });
@@ -15,7 +12,7 @@ abstract class MqttClient<T> {
 
   void subscribeToTopic({
     required String topicName,
-    required MqttQos qualityOfService,
+    required Qos qualityOfService,
   });
 
   void unsubscribeFromTopic({
@@ -23,13 +20,14 @@ abstract class MqttClient<T> {
     required bool acknowledgeUnsubscription,
   });
 
-  ConnectCallback? onConnectedToBroker();
 
-  DisconnectCallback? onDisconnectedFromBroker();
-
-  SubscribeCallback? onSubscribedToTopic();
-
-  UnsubscribeCallback onUnsubscribedFromTopic();
-
-  Stream<List<MqttReceivedMessage<MqttMessage>>>? get updates;
+  // ConnectCallback? onConnectedToBroker();
+  //
+  // DisconnectCallback? onDisconnectedFromBroker();
+  //
+  // SubscribeCallback? onSubscribedToTopic();
+  //
+  // UnsubscribeCallback onUnsubscribedFromTopic();
+  //
+  Stream<Message>? get messagesFromBroker;
 }

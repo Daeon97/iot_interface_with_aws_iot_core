@@ -5,17 +5,10 @@ import 'package:equatable/equatable.dart';
 
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
 
-abstract class UseCase<Type, Params> {
+abstract class UseCase<Entity> {
   const UseCase();
 
-  Future<Either<Failure, Type>> call(
-    Params params,
-  );
-}
-
-class NoParams extends Equatable {
-  const NoParams();
-
-  @override
-  List<Object?> get props => [];
+  Future<Either<Failure, Entity>> call({
+    required String topicName,
+  });
 }

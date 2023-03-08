@@ -8,21 +8,18 @@ import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/doma
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/repositories.dart';
 
 class GetDataFromIotUnityPlatformUseCase
-    implements UseCase<IotUnityPlatformEntity, Params> {
+    implements UseCase<IotUnityPlatformEntity> {
   GetDataFromIotUnityPlatformUseCase({
     required this.iotUnityPlatformRepository,
   });
 
-  IotUnityPlatformRepository iotUnityPlatformRepository;
+  final IotUnityPlatformRepository iotUnityPlatformRepository;
 
   @override
-  Future<Either<Failure, IotUnityPlatformEntity>> call(Params params) =>
-      iotUnityPlatformRepository.getDataFromIotUnityPlatform();
-}
-
-class Params extends Equatable {
-  const Params();
-
-  @override
-  List<Object?> get props => [];
+  Future<Either<Failure, IotUnityPlatformEntity>> call({
+    required String topicName,
+  }) =>
+      iotUnityPlatformRepository.getDataFromIotUnityPlatform(
+        topicName: topicName,
+      );
 }
