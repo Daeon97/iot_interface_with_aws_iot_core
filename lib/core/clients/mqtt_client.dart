@@ -6,7 +6,7 @@ import 'package:mqtt_client/mqtt_server_client.dart' as mqtt_server_client;
 abstract class MqttClient<ConnectionStatus, Qos, Message> {
   const MqttClient();
 
-  Future<ConnectionStatus> connectToBroker({
+  Future<ConnectionStatus?> connectToBroker({
     String? username,
     String? password,
   });
@@ -46,18 +46,17 @@ class MqttClientImplementation
   final mqtt_server_client.MqttServerClient mqttServerClient;
 
   @override
-  Future<mqtt_client.MqttClientConnectionStatus> connectToBroker({
+  Future<mqtt_client.MqttClientConnectionStatus?> connectToBroker({
     String? username,
     String? password,
-  }) {
-    // TODO: implement connectToBroker
-    throw UnimplementedError();
-  }
+  }) =>
+      mqttServerClient.connect(
+        username,
+        password,
+      );
 
   @override
-  void disconnectFromBroker() {
-    // TODO: implement disconnectFromBroker
-  }
+  void disconnectFromBroker() => mqttServerClient.disconnect();
 
   @override
   // TODO: implement messagesFromBroker

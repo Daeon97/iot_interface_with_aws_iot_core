@@ -47,10 +47,58 @@ void main() {
     },
   );
 
-  test(
+  group(
     '''
-      //.
+      Connect to broker
     ''',
-    () {},
+    () {
+      const testUsername = 'testUsername';
+      const testPassword = 'testPassword';
+
+      test(
+        '''
+          should forward call to mqttServerClient.connect() once when
+          mqttClientImplementation.connectToBroker() is called
+        ''',
+        () {
+          mqttClientImplementation.connectToBroker(
+            username: testUsername,
+            password: testPassword,
+          );
+
+          verify(
+            mockMqttServerClient.connect(
+              testUsername,
+              testPassword,
+            ),
+          ).called(1);
+          verifyNoMoreInteractions(
+            mockMqttServerClient,
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Disconnect from broker',
+    () {
+      test(
+        '''
+          should forward call to mqttServerClient.disconnect() once when
+          mqttClientImplementation.disconnectFromBroker() is called
+        ''',
+        () {
+          mqttClientImplementation.disconnectFromBroker();
+
+          verify(
+            mockMqttServerClient.disconnect(),
+          ).called(1);
+          verifyNoMoreInteractions(
+            mockMqttServerClient,
+          );
+        },
+      );
+    },
   );
 }
