@@ -100,27 +100,39 @@ void main() {
     },
   );
 
+  // group(
+  //   'Messages from broker',
+  //   () {
+  //     test(
+  //         '''
+  //         should forward call to
+  //         ''',
+  //       () {},
+  //     );
+  //   },
+  // );
+
   group(
     'Subscribe to topic',
-        () {
-      const testUsername = 'testUsername';
-      const testPassword = 'testPassword';
+    () {
+      const testTopicName = 'test/topic/name';
+      const testQos = mqtt_client.MqttQos.atLeastOnce;
 
       test(
         '''
-          should forward call to mqttServerClient.connect() once when
-          mqttClientImplementation.connectToBroker() is called
+          should forward call to mqttServerClient.subscribe(...) once with the same
+          arguments when mqttClientImplementation.subscribeToTopic(...) is called
         ''',
-            () {
-          mqttClientImplementation.connectToBroker(
-            username: testUsername,
-            password: testPassword,
+        () {
+          mqttClientImplementation.subscribeToTopic(
+            topicName: testTopicName,
+            qualityOfService: testQos,
           );
 
           verify(
-            mockMqttServerClient.connect(
-              testUsername,
-              testPassword,
+            mockMqttServerClient.subscribe(
+              testTopicName,
+              testQos,
             ),
           ).called(1);
           verifyNoMoreInteractions(
@@ -133,17 +145,26 @@ void main() {
 
   group(
     'Unsubscribe from topic',
-        () {
+    () {
+      const testTopicName = 'test/topic/name';
+      const testAcknowledgeUnsubscription = true;
+
       test(
         '''
-          should forward call to mqttServerClient.disconnect() once when
-          mqttClientImplementation.disconnectFromBroker() is called
+          should forward call to mqttServerClient.unsubscribe(...) once with the same
+          arguments when mqttClientImplementation.unsubscribeFromTopic(...) is called
         ''',
-            () {
-          mqttClientImplementation.disconnectFromBroker();
+        () {
+          mqttClientImplementation.unsubscribeFromTopic(
+            topicName: testTopicName,
+            acknowledgeUnsubscription: testAcknowledgeUnsubscription,
+          );
 
           verify(
-            mockMqttServerClient.disconnect(),
+            mockMqttServerClient.unsubscribe(
+              testTopicName,
+              expectAcknowledge: testAcknowledgeUnsubscription,
+            ),
           ).called(1);
           verifyNoMoreInteractions(
             mockMqttServerClient,

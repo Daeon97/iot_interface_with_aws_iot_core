@@ -12,8 +12,10 @@ DA:58,1
 DA:59,2
 DA:61,0
 DA:64,0
-DA:66,0
-DA:74,0
-LF:10
-LH:5
+DA:66,1
+DA:71,2
+DA:76,1
+DA:81,2
+LF:12
+LH:9
 end_of_record

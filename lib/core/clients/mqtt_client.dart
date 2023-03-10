@@ -67,15 +67,19 @@ class MqttClientImplementation
   void subscribeToTopic({
     required String topicName,
     required mqtt_client.MqttQos qualityOfService,
-  }) {
-    // TODO: implement subscribeToTopic
-  }
+  }) =>
+      mqttServerClient.subscribe(
+        topicName,
+        qualityOfService,
+      );
 
   @override
   void unsubscribeFromTopic({
     required String topicName,
     required bool acknowledgeUnsubscription,
-  }) {
-    // TODO: implement unsubscribeFromTopic
-  }
+  }) =>
+      mqttServerClient.unsubscribe(
+        topicName,
+        expectAcknowledge: acknowledgeUnsubscription,
+      );
 }
