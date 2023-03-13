@@ -50,11 +50,11 @@ void main() {
 
   test(
     '''
-      should return a [Future] containing [IotUnityPlatformEntity] when
-      GetDataFromIotUnityPlatformUseCase.call() is called
+      should return a [Stream] containing [IotUnityPlatformEntity] when
+      [GetDataFromIotUnityPlatformUseCase.call] is called
     ''',
     () async {
-      final expectedAnswer = Future.value(
+      final expectedStream = Stream.value(
         const Right<Failure, IotUnityPlatformEntity>(
           testIotUnityPlatformEntity,
         ),
@@ -64,7 +64,7 @@ void main() {
           topicName: anyNamed('topicName'),
         ),
       ).thenAnswer(
-        (_) => expectedAnswer,
+        (_) => expectedStream,
       );
 
       final result = getDataFromIotUnityPlatformUseCase(
@@ -82,7 +82,7 @@ void main() {
       expect(
         result,
         equals(
-          expectedAnswer,
+          expectedStream,
         ),
       );
     },

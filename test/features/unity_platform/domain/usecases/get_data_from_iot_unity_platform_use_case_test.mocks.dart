@@ -3,14 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i3;
 
-import 'package:dartz/dartz.dart' as _i2;
+import 'package:dartz/dartz.dart' as _i4;
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart' as _i5;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart'
     as _i6;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/iot_unity_platform_repository.dart'
-    as _i3;
+    as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
 // ignore_for_file: type=lint
@@ -24,23 +24,13 @@ import 'package:mockito/mockito.dart' as _i1;
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
-  _FakeEither_0(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
 /// A class which mocks [IotUnityPlatformRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockIotUnityPlatformRepository extends _i1.Mock
-    implements _i3.IotUnityPlatformRepository {
+    implements _i2.IotUnityPlatformRepository {
   @override
-  _i4.Future<_i2.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>
+  _i3.Stream<_i4.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>
       getDataFromIotUnityPlatform({required String? topicName}) =>
           (super.noSuchMethod(
             Invocation.method(
@@ -48,25 +38,9 @@ class MockIotUnityPlatformRepository extends _i1.Mock
               [],
               {#topicName: topicName},
             ),
-            returnValue: _i4.Future<
-                    _i2.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>.value(
-                _FakeEither_0<_i5.Failure, _i6.IotUnityPlatformEntity>(
-              this,
-              Invocation.method(
-                #getDataFromIotUnityPlatform,
-                [],
-                {#topicName: topicName},
-              ),
-            )),
-            returnValueForMissingStub: _i4.Future<
-                    _i2.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>.value(
-                _FakeEither_0<_i5.Failure, _i6.IotUnityPlatformEntity>(
-              this,
-              Invocation.method(
-                #getDataFromIotUnityPlatform,
-                [],
-                {#topicName: topicName},
-              ),
-            )),
-          ) as _i4.Future<_i2.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>);
+            returnValue: _i3.Stream<
+                _i4.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>.empty(),
+            returnValueForMissingStub: _i3.Stream<
+                _i4.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>.empty(),
+          ) as _i3.Stream<_i4.Either<_i5.Failure, _i6.IotUnityPlatformEntity>>);
 }

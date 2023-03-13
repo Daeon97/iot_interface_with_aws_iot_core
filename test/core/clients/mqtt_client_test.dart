@@ -55,11 +55,11 @@ void main() {
 
       test(
         '''
-          should forward call to mqttServerClient.connect() once when
-          mqttClientImplementation.connectToBroker() is called
+          should forward call to [MqttServerClient.connect] once when
+          [MqttClientImplementation.connectToBroker] is called
         ''',
-        () {
-          mqttClientImplementation.connectToBroker(
+        () async {
+          final result = mqttClientImplementation.connectToBroker(
             username: testUsername,
             password: testPassword,
           );
@@ -73,6 +73,10 @@ void main() {
           verifyNoMoreInteractions(
             mockMqttServerClient,
           );
+          expect(
+            result,
+            isA<Future<mqtt_client.MqttClientConnectionStatus?>>(),
+          );
         },
       );
     },
@@ -83,8 +87,8 @@ void main() {
     () {
       test(
         '''
-          should forward call to mqttServerClient.disconnect() once when
-          mqttClientImplementation.disconnectFromBroker() is called
+          should call [MqttServerClient.disconnect] once when
+          [MqttClientImplementation.disconnectFromBroker] is called
         ''',
         () {
           mqttClientImplementation.disconnectFromBroker();
@@ -100,17 +104,35 @@ void main() {
     },
   );
 
-  // group(
-  //   'Messages from broker',
-  //   () {
-  //     test(
-  //         '''
-  //         should forward call to
-  //         ''',
-  //       () {},
-  //     );
-  //   },
-  // );
+  group(
+    'Messages from broker',
+    () {
+      test(
+        '''
+          should call [MqttServerClient.updates] once when
+          [MqttClientImplementation.messagesFromBroker] getter is called
+        ''',
+        () {
+          final result = mqttClientImplementation.messagesFromBroker;
+
+          verify(
+            mockMqttServerClient.updates,
+          ).called(1);
+          verifyNoMoreInteractions(
+            mockMqttServerClient,
+          );
+          expect(
+            result,
+            isA<
+                Stream<
+                    List<
+                        mqtt_client
+                            .MqttReceivedMessage<mqtt_client.MqttMessage>>>?>(),
+          );
+        },
+      );
+    },
+  );
 
   group(
     'Subscribe to topic',
@@ -120,8 +142,8 @@ void main() {
 
       test(
         '''
-          should forward call to mqttServerClient.subscribe(...) once with the same
-          arguments when mqttClientImplementation.subscribeToTopic(...) is called
+          should call [MqttServerClient.subscribe] once with the same
+          arguments when [MqttClientImplementation.subscribeToTopic] is called
         ''',
         () {
           mqttClientImplementation.subscribeToTopic(
@@ -151,8 +173,8 @@ void main() {
 
       test(
         '''
-          should forward call to mqttServerClient.unsubscribe(...) once with the same
-          arguments when mqttClientImplementation.unsubscribeFromTopic(...) is called
+          should call [MqttServerClient.unsubscribe] once with the same
+          arguments when [MqttClientImplementation.unsubscribeFromTopic] is called
         ''',
         () {
           mqttClientImplementation.unsubscribeFromTopic(

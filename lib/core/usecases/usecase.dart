@@ -8,7 +8,7 @@ import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
 abstract class UseCase<Entity> {
   const UseCase();
 
-  Future<Either<Failure, Entity>> call({
+  Stream<Either<Failure, Entity>> call({
     required String topicName,
   });
 }

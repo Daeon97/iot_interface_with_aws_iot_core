@@ -1,5 +1,10 @@
 // ignore_for_file: public_member_api_docs
 
+// consider removing this abstract class and just have a concrete class here
+// having this abstract class is kindda overkill
+
+import 'dart:io';
+
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
 import 'package:mqtt_client/mqtt_server_client.dart' as mqtt_server_client;
 
@@ -33,11 +38,20 @@ abstract class MqttClient<ConnectionStatus, Qos, Message> {
 //
 // UnsubscribeCallback onUnsubscribedFromTopic();
 //
+// SecurityContext secureConnection(); and set secure to true
+//
+// keepalive, keepalive period, autoReconnect, on auto reconnect, on auto reconnected,
+// on bad certificate, onSubscribeFail, pongCallback, resubscribeOnAutoReconnect,
+//
+// doAutoReconnect, getSubscriptionsStatus, internalDisconnect, logging,
+// resubscribe
 }
 
 class MqttClientImplementation
     implements
-        MqttClient<mqtt_client.MqttClientConnectionStatus, mqtt_client.MqttQos,
+        MqttClient<
+            mqtt_client.MqttClientConnectionStatus,
+            mqtt_client.MqttQos,
             List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>> {
   const MqttClientImplementation({
     required this.mqttServerClient,
@@ -59,9 +73,8 @@ class MqttClientImplementation
   void disconnectFromBroker() => mqttServerClient.disconnect();
 
   @override
-  // TODO: implement messagesFromBroker
   Stream<List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
-      get messagesFromBroker => throw UnimplementedError();
+      get messagesFromBroker => mqttServerClient.updates;
 
   @override
   void subscribeToTopic({
