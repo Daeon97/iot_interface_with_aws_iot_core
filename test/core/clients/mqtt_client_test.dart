@@ -11,38 +11,47 @@ import 'mqtt_client_test.mocks.dart';
   MockSpec<mqtt_server_client.MqttServerClient>(),
 ])
 void main() {
+  late MqttClient mqttClient;
   late MockMqttServerClient mockMqttServerClient;
-  late MqttClientImplementation mqttClientImplementation;
-  late MqttClient<mqtt_client.MqttClientConnectionStatus, mqtt_client.MqttQos,
-          List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>
-      mqttClient;
+
+  const testServer = 'test server';
+  const testClientId = 'test client ID';
+  const testPort = 1883;
+  const testMaximumConnectionAttempts = 5;
 
   setUp(
     () {
-      mockMqttServerClient = MockMqttServerClient();
-      mqttClientImplementation = MqttClientImplementation(
-        mqttServerClient: mockMqttServerClient,
+      mqttClient = MqttClient(
+        server: testServer,
+        clientId: testClientId,
+        port: testPort,
+        maximumConnectionAttempts: testMaximumConnectionAttempts,
       );
-      mqttClient = mqttClientImplementation;
+      mockMqttServerClient = MockMqttServerClient();
     },
   );
 
   test(
     '''
-      should ensure that [MqttClientImplementation] implements the [MqttClient]
-      interface with [MqttClientConnectionStatus], [MqttQos]
-      and [List<MqttReceivedMessage<MqttMessage>>] as generics
+      should instantiate [MqttServerClient] with the same arguments
+      when [MqttClient] is instantiated
     ''',
     () {
-      expect(
-        mqttClientImplementation,
-        isA<
-            MqttClient<
-                mqtt_client.MqttClientConnectionStatus,
-                mqtt_client.MqttQos,
-                List<
-                    mqtt_client
-                        .MqttReceivedMessage<mqtt_client.MqttMessage>>>>(),
+      verify(
+        mockMqttServerClient.server == testServer,
+      );
+      verify(
+        mockMqttServerClient.clientIdentifier == testClientId,
+      );
+      verify(
+        mockMqttServerClient.port == testPort,
+      );
+      verify(
+        mockMqttServerClient.maxConnectionAttempts ==
+            testMaximumConnectionAttempts,
+      );
+      verifyNoMoreInteractions(
+        mockMqttServerClient,
       );
     },
   );
@@ -55,11 +64,11 @@ void main() {
 
       test(
         '''
-          should forward call to [MqttServerClient.connect] once when
-          [MqttClientImplementation.connectToBroker] is called
+          should call [MqttServerClient.connect] once when
+          [MqttClient.connectToBroker] is called
         ''',
         () async {
-          final result = mqttClientImplementation.connectToBroker(
+          final result = mqttClient.connectToBroker(
             username: testUsername,
             password: testPassword,
           );
@@ -88,10 +97,10 @@ void main() {
       test(
         '''
           should call [MqttServerClient.disconnect] once when
-          [MqttClientImplementation.disconnectFromBroker] is called
+          [MqttClient.disconnectFromBroker] is called
         ''',
         () {
-          mqttClientImplementation.disconnectFromBroker();
+          mqttClient.disconnectFromBroker();
 
           verify(
             mockMqttServerClient.disconnect(),
@@ -110,10 +119,10 @@ void main() {
       test(
         '''
           should call [MqttServerClient.updates] once when
-          [MqttClientImplementation.messagesFromBroker] getter is called
+          [MqttClient.messagesFromBroker] getter is called
         ''',
         () {
-          final result = mqttClientImplementation.messagesFromBroker;
+          final result = mqttClient.messagesFromBroker;
 
           verify(
             mockMqttServerClient.updates,
@@ -143,10 +152,10 @@ void main() {
       test(
         '''
           should call [MqttServerClient.subscribe] once with the same
-          arguments when [MqttClientImplementation.subscribeToTopic] is called
+          arguments when [MqttClient.subscribeToTopic] is called
         ''',
         () {
-          mqttClientImplementation.subscribeToTopic(
+          mqttClient.subscribeToTopic(
             topicName: testTopicName,
             qualityOfService: testQos,
           );
@@ -174,10 +183,10 @@ void main() {
       test(
         '''
           should call [MqttServerClient.unsubscribe] once with the same
-          arguments when [MqttClientImplementation.unsubscribeFromTopic] is called
+          arguments when [MqttClient.unsubscribeFromTopic] is called
         ''',
         () {
-          mqttClientImplementation.unsubscribeFromTopic(
+          mqttClient.unsubscribeFromTopic(
             topicName: testTopicName,
             acknowledgeUnsubscription: testAcknowledgeUnsubscription,
           );

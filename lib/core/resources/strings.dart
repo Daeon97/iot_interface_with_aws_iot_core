@@ -10,3 +10,6 @@ const awsIotCoreServerEndPointKey = 'AWS_IOT_CORE_SERVER_END_POINT';
 const deviceCertificateKey = 'DEVICE_CERTIFICATE';
 const privateKeyKey = 'PRIVATE_KEY';
 const rootCertificateAuthorityKey = 'ROOT_CERTIFICATE_AUTHORITY';
+
+// ID's
+const defaultClientId = ''; // change this later

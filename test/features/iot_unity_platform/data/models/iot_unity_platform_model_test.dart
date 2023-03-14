@@ -1,20 +1,18 @@
 import 'dart:convert';
 
-import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';
-import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
   late IotUnityPlatformModel iotUnityPlatformModel;
 
+  const testHumidity = 1.0;
+  const testTemperature = 1.0;
+
   setUp(
     () {
-      const testHumidity = 1.0;
-      const testTemperature = 1.0;
       iotUnityPlatformModel = const IotUnityPlatformModel(
         humidity: testHumidity,
         temperature: testTemperature,
@@ -86,8 +84,8 @@ void main() {
           final result = iotUnityPlatformModel.toJson();
 
           final expectedJson = {
-            'humidity': 1.0,
-            'temperature': 1.0,
+            'humidity': testHumidity,
+            'temperature': testTemperature,
           };
           expect(
             result,
