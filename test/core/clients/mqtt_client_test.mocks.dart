@@ -624,3 +624,143 @@ class MockMqttServerClient extends _i1.Mock implements _i4.MqttServerClient {
         returnValueForMissingStub: null,
       );
 }
+
+/// A class which mocks [SecurityContext].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockSecurityContext extends _i1.Mock implements _i2.SecurityContext {
+  @override
+  bool get allowLegacyUnsafeRenegotiation => (super.noSuchMethod(
+        Invocation.getter(#allowLegacyUnsafeRenegotiation),
+        returnValue: false,
+        returnValueForMissingStub: false,
+      ) as bool);
+  @override
+  set allowLegacyUnsafeRenegotiation(bool? _allowLegacyUnsafeRenegotiation) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #allowLegacyUnsafeRenegotiation,
+          _allowLegacyUnsafeRenegotiation,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void usePrivateKey(
+    String? file, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #usePrivateKey,
+          [file],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void usePrivateKeyBytes(
+    List<int>? keyBytes, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #usePrivateKeyBytes,
+          [keyBytes],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setTrustedCertificates(
+    String? file, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setTrustedCertificates,
+          [file],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setTrustedCertificatesBytes(
+    List<int>? certBytes, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setTrustedCertificatesBytes,
+          [certBytes],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void useCertificateChain(
+    String? file, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #useCertificateChain,
+          [file],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void useCertificateChainBytes(
+    List<int>? chainBytes, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #useCertificateChainBytes,
+          [chainBytes],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setClientAuthorities(
+    String? file, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setClientAuthorities,
+          [file],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setClientAuthoritiesBytes(
+    List<int>? authCertBytes, {
+    String? password,
+  }) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setClientAuthoritiesBytes,
+          [authCertBytes],
+          {#password: password},
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
+  void setAlpnProtocols(
+    List<String>? protocols,
+    bool? isServer,
+  ) =>
+      super.noSuchMethod(
+        Invocation.method(
+          #setAlpnProtocols,
+          [
+            protocols,
+            isServer,
+          ],
+        ),
+        returnValueForMissingStub: null,
+      );
+}

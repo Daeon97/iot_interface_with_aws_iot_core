@@ -12,4 +12,4 @@ const privateKeyKey = 'PRIVATE_KEY';
 const rootCertificateAuthorityKey = 'ROOT_CERTIFICATE_AUTHORITY';
 
 // ID's
-const defaultClientId = ''; // change this later
+const defaultClientId = 'mecanum_wheel_mobile_app_interface_client';
