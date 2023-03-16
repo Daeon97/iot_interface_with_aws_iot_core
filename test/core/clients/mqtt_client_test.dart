@@ -14,19 +14,10 @@ import 'mqtt_client_test.mocks.dart';
   MockSpec<mqtt_server_client.MqttServerClient>(),
   MockSpec<SecurityContext>(),
 ])
-/*
-  TODO: Refactor these tests to include checkers
-   for [MqttServerClient] server client ID, port, e.t.c.
- */
 void main() {
   late MqttClient mqttClient;
   late MockSecurityContext mockSecurityContext;
   late MockMqttServerClient mockMqttServerClient;
-
-  const testServer = 'test server';
-  const testClientId = 'test client ID';
-  const testPort = 1883;
-  const testMaximumConnectionAttempts = 5;
 
   setUp(
     () {
@@ -49,10 +40,10 @@ void main() {
       test(
         '''
         should establish a security context when
-        [MqttClient.setSecurityContext] is called
+        [MqttClient.establishSecurityContext] is called
       ''',
         () {
-          mqttClient.setSecurityContext(
+          mqttClient.establishSecurityContext(
             rootCertificateAuthority: testRootCertificateAuthority,
             privateKey: testPrivateKey,
             deviceCertificate: testDeviceCertificate,
@@ -125,10 +116,28 @@ void main() {
           verify(
             mockMqttServerClient.clientIdentifier = testClientId,
           ).called(1);
+          verify(
+            mockMqttServerClient.onBadCertificate =
+                mqttClient.onBadCertificateSupplied,
+          ).called(1);
+          verify(
+            mockMqttServerClient.onSubscribeFail =
+                mqttClient.onSubscriptionToTopicFailed,
+          ).called(1);
+          verify(
+            mockMqttServerClient.onDisconnected =
+                mqttClient.onDisconnectedFromBroker,
+          ).called(1);
         },
       );
     },
   );
+
+  /*
+    TODO: Write tests for [MqttClient.onBadCertificateSupplied],
+      [MqttClient.onSubscriptionToTopicFailed]
+      and [MqttClient.onDisconnectedFromBroker] before implementing them
+    */
 
   group(
     'Connect to broker',

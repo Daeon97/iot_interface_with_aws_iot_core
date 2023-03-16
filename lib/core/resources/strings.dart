@@ -12,4 +12,4 @@ const privateKeyKey = 'PRIVATE_KEY';
 const rootCertificateAuthorityKey = 'ROOT_CERTIFICATE_AUTHORITY';
 
 // ID's
-const defaultClientId = 'mecanum_wheel_mobile_app_interface_client';
+const defaultClientId = 'iot_interface_with_aws_iot_core';

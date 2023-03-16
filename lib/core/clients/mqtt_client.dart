@@ -17,7 +17,7 @@ class MqttClient {
   final SecurityContext securityContext;
   final mqtt_server_client.MqttServerClient mqttServerClient;
 
-  void setSecurityContext({
+  void establishSecurityContext({
     required String rootCertificateAuthority,
     required String privateKey,
     required String deviceCertificate,
@@ -55,7 +55,34 @@ class MqttClient {
       )
       ..port = port
       ..keepAlivePeriod = keepAlivePeriod
-      ..clientIdentifier = clientId;
+      ..clientIdentifier = clientId
+      ..onBadCertificate = onBadCertificateSupplied
+      ..onSubscribeFail = onSubscriptionToTopicFailed
+      ..onDisconnected = onDisconnectedFromBroker;
+  }
+
+  bool onBadCertificateSupplied(X509Certificate certificate) {
+    /*
+    TODO: consider returning false so the error
+     is thrown back to the user and not ignored
+    */
+    throw UnimplementedError();
+  }
+
+  void onSubscriptionToTopicFailed(
+    String topicName,
+  ) {
+    /*
+    TODO: Implement onSubscriptionToTopicFailed
+    */
+    throw UnimplementedError();
+  }
+
+  void onDisconnectedFromBroker() {
+    /*
+    TODO: Implement onDisconnectedFromBroker
+    */
+    throw UnimplementedError();
   }
 
   Future<mqtt_client.MqttClientConnectionStatus?> connectToBroker({
@@ -90,11 +117,7 @@ class MqttClient {
         expectAcknowledge: acknowledgeUnsubscription,
       );
 
-// UnsubscribeCallback onUnsubscribedFromTopic();
-//
-// keepalive*, keepalive period+, autoReconnect*, on auto reconnect*, on auto reconnected*,
-// on bad certificate, onSubscribeFail, pongCallback*, resubscribeOnAutoReconnect*,
-//
-// doAutoReconnect*, getSubscriptionsStatus*, internalDisconnect**, logging+,
-// resubscribe*
+// keepalive*, autoReconnect*, on auto reconnect*, on auto reconnected*,
+// pongCallback*, resubscribeOnAutoReconnect*, doAutoReconnect*,
+// getSubscriptionsStatus*, internalDisconnect**, resubscribe*
 }

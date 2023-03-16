@@ -10,6 +10,11 @@ void main() {
   late IotUnityPlatformRepositoryImplementation
       iotUnityPlatformRepositoryImplementation;
 
+  const testServer = 'test server';
+  const testClientId = 'test client ID';
+  const testPort = 1883;
+  const testMaximumConnectionAttempts = 5;
+
   setUp(
     () {
       iotUnityPlatformRepositoryImplementation =
