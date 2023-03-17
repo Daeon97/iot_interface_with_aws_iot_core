@@ -81,7 +81,7 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
   }) =>
       super.noSuchMethod(
         Invocation.method(
-          #setSecurityContext,
+          #establishSecurityContext,
           [],
           {
             #rootCertificateAuthority: rootCertificateAuthority,

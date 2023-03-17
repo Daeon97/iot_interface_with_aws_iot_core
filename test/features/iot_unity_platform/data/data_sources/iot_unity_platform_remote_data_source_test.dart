@@ -33,6 +33,12 @@ void main() {
   const testRootCertificateAuthoritykey = 'ROOT_CERTIFICATE_AUTHORITY';
   const testPrivateKeyKey = 'PRIVATE_KEY';
   const testDeviceCertificateKey = 'DEVICE_CERTIFICATE';
+  const testServer = 'test server';
+  const testMaximumConnectionAttempts = 5;
+  const testEnableLogging = false;
+  const testPort = 01564;
+  const testKeepAlivePeriod = 50;
+  const testClientId = 'test client ID';
 
   test(
     '''
@@ -41,17 +47,53 @@ void main() {
       [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
       is called
     ''',
-    () {
+    () async {
       iotUnityPlatformRemoteDataSourceImplementation
           .getDataFromIotUnityPlatform(
         topicName: testTopicName,
       );
+      /*
+      ** This gives me a null value error in untilCalled(...) **
+      final expectedCall = mockMqttClient.establishSecurityContext(
+        rootCertificateAuthority: dotenv.get(testRootCertificateAuthoritykey),
+        privateKey: dotenv.get(testPrivateKeyKey),
+        deviceCertificate: dotenv.get(testDeviceCertificateKey),
+      );
+      await untilCalled(
+        expectedCall,
+      );
+      verify(expectedCall).called(1);
+      */
       verify(
         mockMqttClient.establishSecurityContext(
           rootCertificateAuthority: dotenv.get(testRootCertificateAuthoritykey),
           privateKey: dotenv.get(testPrivateKeyKey),
           deviceCertificate: dotenv.get(testDeviceCertificateKey),
         ),
+      ).called(1);
+    },
+  );
+
+  test(
+    '''
+      should ensure all other important stuff are initialized when
+      [MqttClient.ensureAllOtherImportantStuffInitialized] is called
+    ''',
+    () async {
+      iotUnityPlatformRemoteDataSourceImplementation
+          .getDataFromIotUnityPlatform(
+        topicName: testTopicName,
+      );
+      final expectedCall =
+          mockMqttClient.ensureAllOtherImportantStuffInitialized(
+        enableLogging: testEnableLogging,
+        port: testPort,
+        keepAlivePeriod: testKeepAlivePeriod,
+        clientId: testClientId,
+      );
+      await untilCalled(expectedCall);
+      verify(
+        expectedCall,
       ).called(1);
     },
   );

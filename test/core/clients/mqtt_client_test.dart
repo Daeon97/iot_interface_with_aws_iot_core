@@ -84,9 +84,9 @@ void main() {
   group(
     'Ensure all other important stuff initialized',
     () {
-      const testEnableLogging = true;
+      const testEnableLogging = false;
       const testPort = 12345;
-      const testKeepAlivePeriod = 20;
+      const testKeepAlivePeriod = 10;
       const testClientId = 'test client ID';
 
       test(
