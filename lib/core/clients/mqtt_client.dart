@@ -119,5 +119,6 @@ class MqttClient {
 
 // keepalive*, autoReconnect*, on auto reconnect*, on auto reconnected*,
 // pongCallback*, resubscribeOnAutoReconnect*, doAutoReconnect*,
-// getSubscriptionsStatus*, internalDisconnect**, resubscribe*
+// getSubscriptionsStatus*, internalDisconnect**, resubscribe*,
+// mqttConnectMessage***!!!***
 }

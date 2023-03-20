@@ -1,9 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
+    as res;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
 
 import '../../../../fixtures/fixture_reader.dart';
 import 'iot_unity_platform_remote_data_source_test.mocks.dart';
@@ -27,106 +31,102 @@ void main() {
     },
   );
 
-  const testUsername = 'test username';
-  const testPassword = 'test password';
+  // const testUsername = 'test username';
+  // const testPassword = 'test password';
   const testTopicName = 'test/topic/name';
+  const testQualityOfService = mqtt_client.MqttQos.atMostOnce;
   const testRootCertificateAuthoritykey = 'ROOT_CERTIFICATE_AUTHORITY';
   const testPrivateKeyKey = 'PRIVATE_KEY';
   const testDeviceCertificateKey = 'DEVICE_CERTIFICATE';
   const testServer = 'test server';
   const testMaximumConnectionAttempts = 5;
-  const testEnableLogging = false;
-  const testPort = 01564;
-  const testKeepAlivePeriod = 50;
-  const testClientId = 'test client ID';
+  const testEnableLogging = kDebugMode;
+  const testPort = res.defaultMqttPort;
+  const testKeepAlivePeriod = res.defaultKeepAlivePeriod;
+  const testClientId = res.defaultClientId;
 
-  test(
-    '''
-      should establish a security context by calling
-      [MqttClient.establishSecurityContext] when
-      [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-      is called
-    ''',
-    () async {
-      iotUnityPlatformRemoteDataSourceImplementation
-          .getDataFromIotUnityPlatform(
-        topicName: testTopicName,
+  group(
+    'getDataFromIotUnityPlatform',
+    () {
+      test(
+        '''
+        should establish a security context first, ensure all other important
+        stuff are initialized second and thereafter try to establish a connection
+        to AWS IoT Core by calling [MqttClient.establishSecurityContext],
+        [MqttClient.ensureAllOtherImportantStuffInitialized] and
+        [MqttClient.connectToBroker] in that order when
+        [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+        is called
+      ''',
+        () async {
+          iotUnityPlatformRemoteDataSourceImplementation
+              .getDataFromIotUnityPlatform(
+            topicName: testTopicName,
+          );
+          verifyInOrder([
+            mockMqttClient.establishSecurityContext(
+              rootCertificateAuthority:
+                  dotenv.get(testRootCertificateAuthoritykey),
+              privateKey: dotenv.get(testPrivateKeyKey),
+              deviceCertificate: dotenv.get(testDeviceCertificateKey),
+            ),
+            mockMqttClient.ensureAllOtherImportantStuffInitialized(
+              enableLogging: testEnableLogging,
+              port: testPort,
+              keepAlivePeriod: testKeepAlivePeriod,
+              clientId: testClientId,
+            ),
+            mockMqttClient.connectToBroker(),
+          ])
+            ..first.called(1)
+            ..[1].called(1)
+            ..last.called(1);
+        },
       );
+
       /*
-      ** This gives me a null value error in untilCalled(...) **
-      final expectedCall = mockMqttClient.establishSecurityContext(
-        rootCertificateAuthority: dotenv.get(testRootCertificateAuthoritykey),
-        privateKey: dotenv.get(testPrivateKeyKey),
-        deviceCertificate: dotenv.get(testDeviceCertificateKey),
+    TODO: Write tests for when [MqttClient.onBadCertificateSupplied],
+      [MqttClient.onSubscriptionToTopicFailed]
+      and [MqttClient.onDisconnectedFromBroker] are called by
+      [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+      before implementing them
+    */
+
+      group(
+        'connectToBroker success',
+        () {
+          setUp(
+            () async {
+              final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+                ..state = mqtt_client.MqttConnectionState.connected;
+              when(mockMqttClient.connectToBroker()).thenAnswer(
+                (_) async => expectedAnswer,
+              );
+            },
+          );
+
+          test(
+            '''
+              should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
+              if the connection to AWS IoT Core broker was successful
+            ''',
+            () {
+              iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+              verify(
+                mockMqttClient.subscribeToTopic(
+                  topicName: testTopicName,
+                  qualityOfService: mqtt_client.MqttQos.atMostOnce,
+                ),
+              ).called(1);
+            },
+          );
+        },
       );
-      await untilCalled(
-        expectedCall,
-      );
-      verify(expectedCall).called(1);
-      */
-      verify(
-        mockMqttClient.establishSecurityContext(
-          rootCertificateAuthority: dotenv.get(testRootCertificateAuthoritykey),
-          privateKey: dotenv.get(testPrivateKeyKey),
-          deviceCertificate: dotenv.get(testDeviceCertificateKey),
-        ),
-      ).called(1);
     },
   );
-
-  test(
-    '''
-      should ensure all other important stuff are initialized when
-      [MqttClient.ensureAllOtherImportantStuffInitialized] is called
-    ''',
-    () async {
-      iotUnityPlatformRemoteDataSourceImplementation
-          .getDataFromIotUnityPlatform(
-        topicName: testTopicName,
-      );
-      final expectedCall =
-          mockMqttClient.ensureAllOtherImportantStuffInitialized(
-        enableLogging: testEnableLogging,
-        port: testPort,
-        keepAlivePeriod: testKeepAlivePeriod,
-        clientId: testClientId,
-      );
-      await untilCalled(expectedCall);
-      verify(
-        expectedCall,
-      ).called(1);
-    },
-  );
-
-//   test(
-//     '''
-//       should establish connection to AWS IoT Core by calling
-//       [MqttClient.connectToBroker] when
-//       [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-//       is called
-//     ''',
-//     () {
-//       iotUnityPlatformRemoteDataSourceImplementation
-//           .getDataFromIotUnityPlatform(
-//         topicName: testTopicName,
-//       );
-// verifyInOrder([
-//
-// ],);
-//     },
-//   );
-
-  // test(
-  //   '''
-  //     should establish connection to AWS IoT Core by calling
-  //     [MqttClient.connectToBroker] when
-  //     [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-  //     is called
-  //   ''',
-  //       () {
-  //     when(mockMqttClient.connectToBroker())
-  //       },
-  // );
 
   // test(
   //   '''
