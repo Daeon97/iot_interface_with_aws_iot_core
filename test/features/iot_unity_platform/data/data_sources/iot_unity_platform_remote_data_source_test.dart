@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
     as res;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';
@@ -59,10 +62,11 @@ void main() {
         is called
       ''',
         () async {
-          iotUnityPlatformRemoteDataSourceImplementation
+          await iotUnityPlatformRemoteDataSourceImplementation
               .getDataFromIotUnityPlatform(
-            topicName: testTopicName,
-          );
+                topicName: testTopicName,
+              )
+              .toList();
           verifyInOrder([
             mockMqttClient.establishSecurityContext(
               rootCertificateAuthority:
@@ -99,7 +103,9 @@ void main() {
             () async {
               final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
                 ..state = mqtt_client.MqttConnectionState.connected;
-              when(mockMqttClient.connectToBroker()).thenAnswer(
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenAnswer(
                 (_) async => expectedAnswer,
               );
             },
@@ -108,13 +114,14 @@ void main() {
           test(
             '''
               should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
-              if the connection to AWS IoT Core broker was successful
+              when the connection to AWS IoT Core broker is successful
             ''',
-            () {
-              iotUnityPlatformRemoteDataSourceImplementation
+            () async {
+              await iotUnityPlatformRemoteDataSourceImplementation
                   .getDataFromIotUnityPlatform(
-                topicName: testTopicName,
-              );
+                    topicName: testTopicName,
+                  )
+                  .toList();
               verify(
                 mockMqttClient.subscribeToTopic(
                   topicName: testTopicName,
@@ -123,8 +130,56 @@ void main() {
               ).called(1);
             },
           );
+
+          group(
+            'subscribe success',
+            () {
+              //.
+            },
+          );
         },
       );
+
+      // group(
+      //   'connectToBroker failed',
+      //   () {
+      //     setUp(
+      //       () {
+      //         final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+      //           ..state = mqtt_client.MqttConnectionState.disconnected
+      //           ..disconnectionOrigin =
+      //               mqtt_client.MqttDisconnectionOrigin.unsolicited;
+      //         when(mockMqttClient.connectToBroker()).thenAnswer(
+      //           (_) async => expectedAnswer,
+      //         );
+      //       },
+      //     );
+      //
+      //     test(
+      //       '''
+      //         should throw [BrokerException] when the connection
+      //         to AWS IoT Core broker fails
+      //       ''',
+      //       () async {
+      //         final result =
+      //             await iotUnityPlatformRemoteDataSourceImplementation
+      //                 .getDataFromIotUnityPlatform(
+      //                   topicName: testTopicName,
+      //                 )
+      //                 .toList();
+      //         verifyNoMoreInteractions(
+      //           mockMqttClient,
+      //         );
+      //         expect(
+      //           result,
+      //           throwsA(
+      //             const TypeMatcher<BrokerException>(),
+      //           ),
+      //         );
+      //       },
+      //     );
+      //   },
+      // );
     },
   );
 

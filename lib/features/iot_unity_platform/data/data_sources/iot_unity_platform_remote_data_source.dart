@@ -3,10 +3,12 @@
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
     as res;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
+import 'package:sprintf/sprintf.dart';
 
 abstract class IotUnityPlatformRemoteDataSource {
   const IotUnityPlatformRemoteDataSource();
@@ -38,27 +40,39 @@ class IotUnityPlatformRemoteDataSourceImplementation
         enableLogging: kDebugMode,
       );
     final connectionStatus = await mqttClient.connectToBroker();
-    if (connectionStatus?.state == mqtt_client.MqttConnectionState.connected) {
+    if (connectionStatus != null &&
+        connectionStatus.state == mqtt_client.MqttConnectionState.connected) {
       mqttClient.subscribeToTopic(
         topicName: topicName,
         qualityOfService: mqtt_client.MqttQos.atMostOnce,
       );
+    } else {
+      // throw BrokerException(
+      //   message: sprintf(
+      //     res.brokerExceptionMessage,
+      //     [
+      //       connectionStatus?.state.name,
+      //       connectionStatus?.returnCode?.name,
+      //       connectionStatus?.disconnectionOrigin.name,
+      //     ],
+      //   ),
+      // );
     }
-    final stream = Stream.periodic(
-      const Duration(
-        seconds: 5,
-      ),
-      (_) => const IotUnityPlatformModel(
-        humidity: 1.0,
-        temperature: 1.0,
-      ),
-    );
-
-    await for (final s in stream) {
-      yield IotUnityPlatformModel(
-        humidity: s.humidity,
-        temperature: s.temperature,
-      );
-    }
+    // final stream = Stream.periodic(
+    //   const Duration(
+    //     seconds: 5,
+    //   ),
+    //   (_) => const IotUnityPlatformModel(
+    //     humidity: 1.0,
+    //     temperature: 1.0,
+    //   ),
+    // );
+    //
+    // await for (final s in stream) {
+    //   yield IotUnityPlatformModel(
+    //     humidity: s.humidity,
+    //     temperature: s.temperature,
+    //   );
+    // }
   }
 }

@@ -48,6 +48,10 @@ class MqttClient {
     int port = res.defaultMqttPort,
     int keepAlivePeriod = res.defaultKeepAlivePeriod,
     String clientId = res.defaultClientId,
+    bool Function(X509Certificate certificate)? onBadCertificateSupplied,
+    void Function(String)? onSubscribedToTopic,
+    void Function(String)? onSubscriptionToTopicFailed,
+    void Function()? onDisconnectedFromBroker,
   }) {
     mqttServerClient
       ..logging(
@@ -57,32 +61,9 @@ class MqttClient {
       ..keepAlivePeriod = keepAlivePeriod
       ..clientIdentifier = clientId
       ..onBadCertificate = onBadCertificateSupplied
+      ..onSubscribed = onSubscribedToTopic
       ..onSubscribeFail = onSubscriptionToTopicFailed
       ..onDisconnected = onDisconnectedFromBroker;
-  }
-
-  bool onBadCertificateSupplied(X509Certificate certificate) {
-    /*
-    TODO: consider returning false so the error
-     is thrown back to the user and not ignored
-    */
-    throw UnimplementedError();
-  }
-
-  void onSubscriptionToTopicFailed(
-    String topicName,
-  ) {
-    /*
-    TODO: Implement onSubscriptionToTopicFailed
-    */
-    throw UnimplementedError();
-  }
-
-  void onDisconnectedFromBroker() {
-    /*
-    TODO: Implement onDisconnectedFromBroker
-    */
-    throw UnimplementedError();
   }
 
   Future<mqtt_client.MqttClientConnectionStatus?> connectToBroker({

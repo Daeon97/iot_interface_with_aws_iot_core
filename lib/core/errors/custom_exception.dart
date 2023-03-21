@@ -2,7 +2,14 @@
 
 abstract class CustomException implements Exception {
   const CustomException({
-    final String? code,
-    final String? message,
+    required this.message,
+  });
+
+  final String message;
+}
+
+class BrokerException extends CustomException {
+  const BrokerException({
+    required super.message,
   });
 }

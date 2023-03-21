@@ -88,6 +88,36 @@ void main() {
       const testPort = 12345;
       const testKeepAlivePeriod = 10;
       const testClientId = 'test client ID';
+final testOnBadCertificateSupplied bool onBadCertificateSupplied(X509Certificate certificate) {
+      /*
+      TODO: consider returning false so the error
+       is thrown back to the user and not ignored
+      */
+      throw UnimplementedError();
+    }
+
+    void onSubscribedToTopic(String topicName,) {
+        /*
+        TODO: Implement onSubscribedToTopic
+        */
+        throw UnimplementedError();
+      }
+
+      void onSubscriptionToTopicFailed(
+        String topicName,
+      ) {
+        /*
+        TODO: Implement onSubscriptionToTopicFailed
+        */
+        throw UnimplementedError();
+      }
+
+      void onDisconnectedFromBroker() {
+        /*
+        TODO: Implement onDisconnectedFromBroker
+        */
+        throw UnimplementedError();
+      }
 
       test(
         '''
@@ -118,15 +148,18 @@ void main() {
           ).called(1);
           verify(
             mockMqttServerClient.onBadCertificate =
-                mqttClient.onBadCertificateSupplied,
+                testOnBadCertificateSupplied,
+          ).called(1);
+          verify(
+            mockMqttServerClient.onSubscribed = testOnSubscribedToTopic,
           ).called(1);
           verify(
             mockMqttServerClient.onSubscribeFail =
-                mqttClient.onSubscriptionToTopicFailed,
+                testOnSubscriptionToTopicFailed,
           ).called(1);
           verify(
             mockMqttServerClient.onDisconnected =
-                mqttClient.onDisconnectedFromBroker,
+                testOnDisconnectedFromBroker,
           ).called(1);
         },
       );
@@ -135,7 +168,7 @@ void main() {
 
   /*
     TODO: Write tests for [MqttClient.onBadCertificateSupplied],
-      [MqttClient.onSubscriptionToTopicFailed]
+      [MqttClient.onSubscribedToTopic], [MqttClient.onSubscriptionToTopicFailed]
       and [MqttClient.onDisconnectedFromBroker] before implementing them
     */
 

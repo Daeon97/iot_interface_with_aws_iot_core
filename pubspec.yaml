@@ -20,6 +20,7 @@ dependencies:
   mqtt_client: ^9.7.4
   dio: ^5.0.0
   flutter_dotenv: ^5.0.2
+  sprintf: ^7.0.0
 
 dev_dependencies:
   flutter_test:
