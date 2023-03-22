@@ -97,6 +97,10 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
     int? port = 8883,
     int? keepAlivePeriod = 20,
     String? clientId = r'iot_interface_with_aws_iot_core',
+    bool Function(_i2.X509Certificate)? onBadCertificateSupplied,
+    void Function(String)? onSubscribedToTopic,
+    void Function(String)? onSubscriptionToTopicFailed,
+    void Function()? onDisconnectedFromBroker,
   }) =>
       super.noSuchMethod(
         Invocation.method(
@@ -107,33 +111,11 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
             #port: port,
             #keepAlivePeriod: keepAlivePeriod,
             #clientId: clientId,
+            #onBadCertificateSupplied: onBadCertificateSupplied,
+            #onSubscribedToTopic: onSubscribedToTopic,
+            #onSubscriptionToTopicFailed: onSubscriptionToTopicFailed,
+            #onDisconnectedFromBroker: onDisconnectedFromBroker,
           },
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  bool onBadCertificateSupplied(_i2.X509Certificate? certificate) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #onBadCertificateSupplied,
-          [certificate],
-        ),
-        returnValue: false,
-        returnValueForMissingStub: false,
-      ) as bool);
-  @override
-  void onSubscriptionToTopicFailed(String? topicName) => super.noSuchMethod(
-        Invocation.method(
-          #onSubscriptionToTopicFailed,
-          [topicName],
-        ),
-        returnValueForMissingStub: null,
-      );
-  @override
-  void onDisconnectedFromBroker() => super.noSuchMethod(
-        Invocation.method(
-          #onDisconnectedFromBroker,
-          [],
         ),
         returnValueForMissingStub: null,
       );

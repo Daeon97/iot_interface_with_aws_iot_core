@@ -88,35 +88,23 @@ void main() {
       const testPort = 12345;
       const testKeepAlivePeriod = 10;
       const testClientId = 'test client ID';
-final testOnBadCertificateSupplied bool onBadCertificateSupplied(X509Certificate certificate) {
-      /*
-      TODO: consider returning false so the error
-       is thrown back to the user and not ignored
-      */
-      throw UnimplementedError();
-    }
 
-    void onSubscribedToTopic(String topicName,) {
-        /*
-        TODO: Implement onSubscribedToTopic
-        */
-        throw UnimplementedError();
-      }
+      bool testOnBadCertificateSupplied(X509Certificate certificate) => false;
 
-      void onSubscriptionToTopicFailed(
+      void testOnSubscribedToTopic(
         String topicName,
       ) {
-        /*
-        TODO: Implement onSubscriptionToTopicFailed
-        */
-        throw UnimplementedError();
+        return;
       }
 
-      void onDisconnectedFromBroker() {
-        /*
-        TODO: Implement onDisconnectedFromBroker
-        */
-        throw UnimplementedError();
+      void testOnSubscriptionToTopicFailed(
+        String topicName,
+      ) {
+        return;
+      }
+
+      void testOnDisconnectedFromBroker() {
+        return;
       }
 
       test(
@@ -130,6 +118,10 @@ final testOnBadCertificateSupplied bool onBadCertificateSupplied(X509Certificate
             port: testPort,
             keepAlivePeriod: testKeepAlivePeriod,
             clientId: testClientId,
+            onBadCertificateSupplied: testOnBadCertificateSupplied,
+            onSubscribedToTopic: testOnSubscribedToTopic,
+            onSubscriptionToTopicFailed: testOnSubscriptionToTopicFailed,
+            onDisconnectedFromBroker: testOnDisconnectedFromBroker,
           );
 
           verify(
@@ -158,19 +150,12 @@ final testOnBadCertificateSupplied bool onBadCertificateSupplied(X509Certificate
                 testOnSubscriptionToTopicFailed,
           ).called(1);
           verify(
-            mockMqttServerClient.onDisconnected =
-                testOnDisconnectedFromBroker,
+            mockMqttServerClient.onDisconnected = testOnDisconnectedFromBroker,
           ).called(1);
         },
       );
     },
   );
-
-  /*
-    TODO: Write tests for [MqttClient.onBadCertificateSupplied],
-      [MqttClient.onSubscribedToTopic], [MqttClient.onSubscriptionToTopicFailed]
-      and [MqttClient.onDisconnectedFromBroker] before implementing them
-    */
 
   group(
     'Connect to broker',
