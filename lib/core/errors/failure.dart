@@ -13,3 +13,21 @@ class BrokerFailure extends Failure {
     required super.message,
   });
 }
+
+class BadCertificateFailure extends Failure {
+  const BadCertificateFailure({
+    required super.message,
+  });
+}
+
+class TopicSubscriptionFailure extends Failure {
+  const TopicSubscriptionFailure({
+    required super.message,
+  });
+}
+
+class UnsolicitedDisconnectionFailure extends Failure {
+  const UnsolicitedDisconnectionFailure({
+    required super.message,
+  });
+}

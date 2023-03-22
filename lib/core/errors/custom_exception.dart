@@ -13,3 +13,21 @@ class BrokerException extends CustomException {
     required super.message,
   });
 }
+
+class BadCertificateException extends CustomException {
+  const BadCertificateException({
+    required super.message,
+  });
+}
+
+class TopicSubscriptionException extends CustomException {
+  const TopicSubscriptionException({
+    required super.message,
+  });
+}
+
+class UnsolicitedDisconnectionException extends CustomException {
+  const UnsolicitedDisconnectionException({
+    required super.message,
+  });
+}

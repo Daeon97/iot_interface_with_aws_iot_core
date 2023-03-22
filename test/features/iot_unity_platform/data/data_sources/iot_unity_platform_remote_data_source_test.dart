@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,6 +12,7 @@ import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
+import 'package:sprintf/sprintf.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 import 'iot_unity_platform_remote_data_source_test.mocks.dart';
@@ -44,9 +46,42 @@ void main() {
   const testServer = 'test server';
   const testMaximumConnectionAttempts = 5;
   const testEnableLogging = kDebugMode;
-  const testPort = res.defaultMqttPort;
-  const testKeepAlivePeriod = res.defaultKeepAlivePeriod;
-  const testClientId = res.defaultClientId;
+
+  bool testOnBadCertificateSupplied(X509Certificate certificate) =>
+      throw BadCertificateException(
+        message: sprintf(
+          res.badCertificateExceptionMessage,
+          [
+            certificate,
+          ],
+        ),
+      );
+
+  // void testOnSubscribedToTopic(
+  //   String topicName,
+  // ) {
+  //   return;
+  // }
+
+  void testOnSubscriptionToTopicFailed(
+    String topicName,
+  ) =>
+      throw TopicSubscriptionException(
+        message: sprintf(
+          res.topicSubscriptionExceptionMessage,
+          [
+            topicName,
+          ],
+        ),
+      );
+
+  void testOnDisconnectedFromBroker() =>
+      throw UnsolicitedDisconnectionException(
+        message: sprintf(
+          res.unsolicitedDisconnectionExceptionMessage,
+          const <String>[],
+        ),
+      );
 
   group(
     'getDataFromIotUnityPlatform',
@@ -76,25 +111,18 @@ void main() {
             ),
             mockMqttClient.ensureAllOtherImportantStuffInitialized(
               enableLogging: testEnableLogging,
-              port: testPort,
-              keepAlivePeriod: testKeepAlivePeriod,
-              clientId: testClientId,
+              // onBadCertificateSupplied: testOnBadCertificateSupplied,
+              // onSubscribedToTopic: testOnSubscribedToTopic,
+              onSubscriptionToTopicFailed: testOnSubscriptionToTopicFailed,
+              // onDisconnectedFromBroker: testOnDisconnectedFromBroker,
             ),
             mockMqttClient.connectToBroker(),
           ])
-            ..first.called(1)
+            ..[0].called(1)
             ..[1].called(1)
-            ..last.called(1);
+            ..[2].called(1);
         },
       );
-
-      /*
-    TODO: Write tests for when [MqttClient.onBadCertificateSupplied],
-      [MqttClient.onSubscriptionToTopicFailed]
-      and [MqttClient.onDisconnectedFromBroker] are called by
-      [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-      before implementing them
-    */
 
       group(
         'connectToBroker success',

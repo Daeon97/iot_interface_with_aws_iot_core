@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
@@ -38,6 +40,9 @@ class IotUnityPlatformRemoteDataSourceImplementation
       )
       ..ensureAllOtherImportantStuffInitialized(
         enableLogging: kDebugMode,
+        // onBadCertificateSupplied: _onBadCertificateSupplied,
+        onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
+        // onDisconnectedFromBroker: _onDisconnectedFromBroker,
       );
     final connectionStatus = await mqttClient.connectToBroker();
     if (connectionStatus != null &&
@@ -75,4 +80,31 @@ class IotUnityPlatformRemoteDataSourceImplementation
     //   );
     // }
   }
+
+  bool _onBadCertificateSupplied(X509Certificate certificate) =>
+      throw BadCertificateException(
+        message: sprintf(
+          res.badCertificateExceptionMessage,
+          [
+            certificate,
+          ],
+        ),
+      );
+
+  void _onSubscriptionToTopicFailed(String topicName) =>
+      throw TopicSubscriptionException(
+        message: sprintf(
+          res.topicSubscriptionExceptionMessage,
+          [
+            topicName,
+          ],
+        ),
+      );
+
+  void _onDisconnectedFromBroker() => throw UnsolicitedDisconnectionException(
+        message: sprintf(
+          res.unsolicitedDisconnectionExceptionMessage,
+          const <String>[],
+        ),
+      );
 }

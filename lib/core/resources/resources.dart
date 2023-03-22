@@ -1,2 +1,3 @@
+export 'colors.dart';
+export 'numbers.dart';
 export 'strings.dart';
-export 'integers.dart';
