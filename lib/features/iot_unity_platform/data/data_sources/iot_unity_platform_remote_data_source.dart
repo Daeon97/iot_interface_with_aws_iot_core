@@ -40,18 +40,27 @@ class IotUnityPlatformRemoteDataSourceImplementation
       )
       ..ensureAllOtherImportantStuffInitialized(
         enableLogging: kDebugMode,
-        // onBadCertificateSupplied: _onBadCertificateSupplied,
+        onBadCertificateSupplied: _onBadCertificateSupplied,
+        // onSubscribedToTopic: _onSubscribedToTopic,
         onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
-        // onDisconnectedFromBroker: _onDisconnectedFromBroker,
+        onDisconnectedFromBroker: _onDisconnectedFromBroker,
       );
     final connectionStatus = await mqttClient.connectToBroker();
+
     if (connectionStatus != null &&
         connectionStatus.state == mqtt_client.MqttConnectionState.connected) {
-      mqttClient.subscribeToTopic(
+      final subscription = mqttClient.subscribeToTopic(
         topicName: topicName,
         qualityOfService: mqtt_client.MqttQos.atMostOnce,
       );
+
+      if (subscription != null) {
+        final messagesFromBroker = mqttClient.messagesFromBroker;
+      } else {
+        // TODO: Implement else block
+      }
     } else {
+      // TODO: Implement else block
       // throw BrokerException(
       //   message: sprintf(
       //     res.brokerExceptionMessage,
@@ -90,6 +99,10 @@ class IotUnityPlatformRemoteDataSourceImplementation
           ],
         ),
       );
+
+  // void _onSubscribedToTopic(String topicName) {
+  //   return;
+  // }
 
   void _onSubscriptionToTopicFailed(String topicName) =>
       throw TopicSubscriptionException(

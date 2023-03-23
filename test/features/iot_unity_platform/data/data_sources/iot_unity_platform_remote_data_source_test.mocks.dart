@@ -146,11 +146,11 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
         returnValueForMissingStub: null,
       );
   @override
-  void subscribeToTopic({
+  _i6.Subscription? subscribeToTopic({
     required String? topicName,
     required _i6.MqttQos? qualityOfService,
   }) =>
-      super.noSuchMethod(
+      (super.noSuchMethod(
         Invocation.method(
           #subscribeToTopic,
           [],
@@ -160,7 +160,7 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
           },
         ),
         returnValueForMissingStub: null,
-      );
+      ) as _i6.Subscription?);
   @override
   void unsubscribeFromTopic({
     required String? topicName,
