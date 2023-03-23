@@ -256,7 +256,7 @@ void main() {
           arguments when [MqttClient.subscribeToTopic] is called
         ''',
         () {
-          mqttClient.subscribeToTopic(
+          final result = mqttClient.subscribeToTopic(
             topicName: testTopicName,
             qualityOfService: testQos,
           );
@@ -269,6 +269,10 @@ void main() {
           ).called(1);
           verifyNoMoreInteractions(
             mockMqttServerClient,
+          );
+          expect(
+            result,
+            isA<mqtt_client.Subscription?>(),
           );
         },
       );

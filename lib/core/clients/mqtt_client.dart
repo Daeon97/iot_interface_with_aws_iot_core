@@ -80,7 +80,7 @@ class MqttClient {
   Stream<List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
       get messagesFromBroker => mqttServerClient.updates;
 
-  void subscribeToTopic({
+  mqtt_client.Subscription? subscribeToTopic({
     required String topicName,
     required mqtt_client.MqttQos qualityOfService,
   }) =>
