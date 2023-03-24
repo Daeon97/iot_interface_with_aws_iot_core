@@ -39,20 +39,12 @@ void main() {
     },
   );
 
-  // const testUsername = 'test username';
-  // const testPassword = 'test password';
   const testTopicName = 'test/topic/name';
   const testQualityOfService = mqtt_client.MqttQos.atMostOnce;
   const testRootCertificateAuthoritykey = 'ROOT_CERTIFICATE_AUTHORITY';
   const testPrivateKeyKey = 'PRIVATE_KEY';
   const testDeviceCertificateKey = 'DEVICE_CERTIFICATE';
-  const testServer = 'test server';
-  const testMaximumConnectionAttempts = 5;
   const testEnableLogging = kDebugMode;
-  const testIotUnityPlatformModel = IotUnityPlatformModel(
-    humidity: 1,
-    temperature: 1,
-  );
 
   // bool testOnBadCertificateSupplied(X509Certificate certificate) =>
   //     throw BadCertificateException(
@@ -261,7 +253,7 @@ void main() {
 
               test(
                 '''
-                  should call the [MqttClient.messagesFromBroker] getter
+                  should call the [MqttClient.messagesFromBroker] getter once
                   when the client has successfully subscribed to the desired topic
                 ''',
                 () async {
@@ -279,52 +271,93 @@ void main() {
               group(
                 'messages from broker',
                 () {
+                  late StreamController<
+                      List<
+                          mqtt_client.MqttReceivedMessage<
+                              mqtt_client.MqttMessage>>> streamController;
+
                   setUp(
                     () {
-                      final a = jsonEncode(
-                        jsonDecode(
-                          fixture(
-                            'iot_unity_platform_data_integers.json',
-                          ),
-                        ),
+                      streamController = StreamController<
+                          List<
+                              mqtt_client.MqttReceivedMessage<
+                                  mqtt_client.MqttMessage>>>();
+                      // controller.
+                      when(
+                        mockMqttClient.messagesFromBroker,
+                      ).thenAnswer(
+                        (_) => streamController.stream,
                       );
-                      final b = mqtt_client.MqttReceivedMessage<
-                          mqtt_client.MqttPublishMessage>(
-                        testTopicName,
-                        mqtt_client.MqttPublishMessage()
-                          ..payload.message = Uint8Buffer(5),
-                      );
-                      final iterables = <
-                          mqtt_client
-                              .MqttReceivedMessage<mqtt_client.MqttMessage>>[];
-                      // final expectedAnswer = Stream.fromIterable(
-                      //   const Duration(
-                      //     seconds: 5,
-                      //   ),
-                      //   (_) => testIotUnityPlatformModel,
-                      // );
-                      // when(
-                      //   mockMqttClient.messagesFromBroker,
-                      // ).thenAnswer(
-                      //   (_) => expectedAnswer,
-                      // );
                     },
                   );
 
-                  // test(
-                  //   '''
-                  //     should parse and yield a stream of messages from the broker
-                  //     corresponding to the desired topic when the messages
-                  //     from broker stream is not null
-                  //   ''',
-                  //   () async {
-                  //     await iotUnityPlatformRemoteDataSourceImplementation
-                  //         .getDataFromIotUnityPlatform(
-                  //           topicName: testTopicName,
-                  //         )
-                  //         .toList();
-                  //   },
-                  // );
+                  /*
+                    TODO: Refactor this test later, also add a check to ensure
+                      that message stream topic corresponds to the desired topic
+                   */
+
+                  test(
+                    '''
+                      should yield back a [Stream<IotUnityPlatformModel>]
+                      from the broker when the broker stream is not null
+                    ''',
+                    () {
+                      final result =
+                          iotUnityPlatformRemoteDataSourceImplementation
+                              .getDataFromIotUnityPlatform(
+                        topicName: testTopicName,
+                      );
+
+                      final expectedMessages = List.generate(
+                        2,
+                        (index) => IotUnityPlatformModel(
+                          humidity: (index + 1).toDouble(),
+                          temperature: (index + 1).toDouble(),
+                        ),
+                      );
+
+                      Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
+                        ..addAll(
+                          Uint8List.fromList(
+                            utf8.encode(
+                              jsonEncode(
+                                {
+                                  'humidity': (index + 1).toDouble(),
+                                  'temperature': (index + 1).toDouble(),
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+
+                      final receivedMessages = List.generate(
+                        2,
+                        (index) => mqtt_client.MqttReceivedMessage<
+                            mqtt_client.MqttPublishMessage>(
+                          testTopicName,
+                          mqtt_client.MqttPublishMessage()
+                            ..payload.message = computeUint8Buffer(
+                              index,
+                            ),
+                        ),
+                      );
+
+                      expectLater(
+                        result,
+                        emitsInAnyOrder(
+                          expectedMessages,
+                        ),
+                      );
+                      streamController.add(
+                        receivedMessages,
+                      );
+                    },
+                    // timeout: const Timeout(
+                    //   Duration(
+                    //     minutes: 2,
+                    //   ),
+                    // ),
+                  );
                 },
               );
             },

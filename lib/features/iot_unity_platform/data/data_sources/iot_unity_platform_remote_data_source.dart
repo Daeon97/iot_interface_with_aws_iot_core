@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -56,6 +58,26 @@ class IotUnityPlatformRemoteDataSourceImplementation
 
       if (subscription != null) {
         final messagesFromBroker = mqttClient.messagesFromBroker;
+
+        if (messagesFromBroker != null) {
+          await for (final message in messagesFromBroker) {
+            final publishedMessage =
+                message.last.payload as mqtt_client.MqttPublishMessage;
+            final uint8Buffer = publishedMessage.payload.message;
+            final uint8List = Uint8List.view(
+              uint8Buffer.buffer,
+              0,
+              uint8Buffer.length,
+            );
+            final utf8Decoded = utf8.decode(
+              uint8List,
+            );
+            final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
+            yield IotUnityPlatformModel.fromJson(
+              json,
+            );
+          }
+        }
       } else {
         // TODO: Implement else block
       }
@@ -72,22 +94,6 @@ class IotUnityPlatformRemoteDataSourceImplementation
       //   ),
       // );
     }
-    // final stream = Stream.periodic(
-    //   const Duration(
-    //     seconds: 5,
-    //   ),
-    //   (_) => const IotUnityPlatformModel(
-    //     humidity: 1.0,
-    //     temperature: 1.0,
-    //   ),
-    // );
-    //
-    // await for (final s in stream) {
-    //   yield IotUnityPlatformModel(
-    //     humidity: s.humidity,
-    //     temperature: s.temperature,
-    //   );
-    // }
   }
 
   bool _onBadCertificateSupplied(X509Certificate certificate) =>
