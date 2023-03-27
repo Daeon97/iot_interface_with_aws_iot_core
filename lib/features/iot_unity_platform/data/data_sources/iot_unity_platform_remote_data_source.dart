@@ -61,21 +61,30 @@ class IotUnityPlatformRemoteDataSourceImplementation
 
         if (messagesFromBroker != null) {
           await for (final message in messagesFromBroker) {
-            final publishedMessage =
-                message.last.payload as mqtt_client.MqttPublishMessage;
-            final uint8Buffer = publishedMessage.payload.message;
-            final uint8List = Uint8List.view(
-              uint8Buffer.buffer,
-              0,
-              uint8Buffer.length,
-            );
-            final utf8Decoded = utf8.decode(
-              uint8List,
-            );
-            final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
-            yield IotUnityPlatformModel.fromJson(
-              json,
-            );
+            for (final mqttReceivedMessage in message) {
+              if (mqttReceivedMessage.topic == topicName) {
+                final publishedMessage = mqttReceivedMessage.payload
+                    as mqtt_client.MqttPublishMessage;
+                final uint8Buffer = publishedMessage.payload.message;
+                final uint8List = Uint8List.view(
+                  uint8Buffer.buffer,
+                  0,
+                  uint8Buffer.length,
+                );
+                final utf8Decoded = utf8.decode(
+                  uint8List,
+                );
+                final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
+                yield IotUnityPlatformModel.fromJson(
+                  json,
+                );
+              }
+              /*
+              TODO: Add else clause to prevent a possible Asynchronous Gap.
+                Also consider writing Tests for logic inside if block
+                refer to line 272 of corresponding test file
+              */
+            }
           }
         }
       } else {

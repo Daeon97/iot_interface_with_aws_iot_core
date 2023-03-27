@@ -40,6 +40,7 @@ void main() {
   );
 
   const testTopicName = 'test/topic/name';
+  const testTopic1 = 'test/topic/1';
   const testQualityOfService = mqtt_client.MqttQos.atMostOnce;
   const testRootCertificateAuthoritykey = 'ROOT_CERTIFICATE_AUTHORITY';
   const testPrivateKeyKey = 'PRIVATE_KEY';
@@ -268,6 +269,8 @@ void main() {
                 },
               );
 
+              /*TODO: Consider writing tests for logic inside await for */
+
               group(
                 'messages from broker',
                 () {
@@ -291,15 +294,11 @@ void main() {
                     },
                   );
 
-                  /*
-                    TODO: Refactor this test later, also add a check to ensure
-                      that message stream topic corresponds to the desired topic
-                   */
-
                   test(
                     '''
                       should yield back a [Stream<IotUnityPlatformModel>]
-                      from the broker when the broker stream is not null
+                      corresponding to the appropriate topic when the broker
+                      stream is not null
                     ''',
                     () {
                       final result =
@@ -311,8 +310,8 @@ void main() {
                       final expectedMessages = List.generate(
                         2,
                         (index) => IotUnityPlatformModel(
-                          humidity: (index + 1).toDouble(),
-                          temperature: (index + 1).toDouble(),
+                          humidity: index == 0 ? 2.toDouble() : 4.toDouble(),
+                          temperature: index == 0 ? 2.toDouble() : 4.toDouble(),
                         ),
                       );
 
@@ -331,32 +330,36 @@ void main() {
                         );
 
                       final receivedMessages = List.generate(
-                        2,
-                        (index) => mqtt_client.MqttReceivedMessage<
-                            mqtt_client.MqttPublishMessage>(
-                          testTopicName,
-                          mqtt_client.MqttPublishMessage()
-                            ..payload.message = computeUint8Buffer(
-                              index,
-                            ),
+                        5,
+                        (index) => List.generate(
+                          1,
+                          (_) => mqtt_client.MqttReceivedMessage<
+                              mqtt_client.MqttPublishMessage>(
+                            (index + 1) % 2 != 0 ? testTopic1 : testTopicName,
+                            mqtt_client.MqttPublishMessage()
+                              ..payload.message = computeUint8Buffer(
+                                index,
+                              ),
+                          ),
                         ),
                       );
 
                       expectLater(
                         result,
-                        emitsInAnyOrder(
-                          expectedMessages,
+                        emitsInOrder(
+                          [
+                            expectedMessages.first,
+                            expectedMessages.last,
+                          ],
                         ),
                       );
-                      streamController.add(
-                        receivedMessages,
-                      );
+
+                      for (final receivedMessagesList in receivedMessages) {
+                        streamController.add(
+                          receivedMessagesList,
+                        );
+                      }
                     },
-                    // timeout: const Timeout(
-                    //   Duration(
-                    //     minutes: 2,
-                    //   ),
-                    // ),
                   );
                 },
               );
