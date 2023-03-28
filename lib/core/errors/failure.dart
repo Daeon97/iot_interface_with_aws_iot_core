@@ -8,8 +8,8 @@ abstract class Failure {
   final String message;
 }
 
-class BrokerFailure extends Failure {
-  const BrokerFailure({
+class NoMessagesFromBrokerFailure extends Failure {
+  const NoMessagesFromBrokerFailure({
     required super.message,
   });
 }

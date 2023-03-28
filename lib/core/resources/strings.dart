@@ -15,8 +15,8 @@ const rootCertificateAuthorityKey = 'ROOT_CERTIFICATE_AUTHORITY';
 const defaultClientId = 'iot_interface_with_aws_iot_core';
 
 // exception messages
-const brokerExceptionMessage =
-    '''Broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
+const noMessagesFromBrokerExceptionMessage =
+    '''No messages from broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
 const badCertificateExceptionMessage =
     'Bad certificate exception. X509Certificate -> %s';
 const topicSubscriptionExceptionMessage =
@@ -25,7 +25,7 @@ const unsolicitedDisconnectionExceptionMessage =
     'Unsolicited disconnection -> %s';
 
 // failure messages
-const brokerFailureMessage = 'There was an issue connecting to the MQTT broker';
+const noMessagesFromBrokerFailureMessage = 'No data';
 const badCertificateFailureMessage = 'Certificate credentials are incorrect';
 const topicSubscriptionFailureMessage =
     'There was an issue subscribing to the appropriate topic';

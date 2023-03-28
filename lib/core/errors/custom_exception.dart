@@ -8,8 +8,8 @@ abstract class CustomException implements Exception {
   final String message;
 }
 
-class BrokerException extends CustomException {
-  const BrokerException({
+class NoMessagesFromBrokerException extends CustomException {
+  const NoMessagesFromBrokerException({
     required super.message,
   });
 }

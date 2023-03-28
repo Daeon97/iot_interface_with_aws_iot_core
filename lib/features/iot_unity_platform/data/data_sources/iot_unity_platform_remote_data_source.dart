@@ -87,6 +87,18 @@ class IotUnityPlatformRemoteDataSourceImplementation
             }
           }
         }
+        // else {
+        //   throw NoMessagesFromBrokerException(
+        //     message: sprintf(
+        //       res.noMessagesFromBrokerExceptionMessage,
+        //       [
+        //         connectionStatus.state,
+        //         connectionStatus.returnCode,
+        //         connectionStatus.disconnectionOrigin,
+        //       ],
+        //     ),
+        //   );
+        // }
       } else {
         // TODO: Implement else block
       }

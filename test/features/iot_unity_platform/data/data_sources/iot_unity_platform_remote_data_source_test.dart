@@ -274,14 +274,14 @@ void main() {
               group(
                 'messages from broker',
                 () {
-                  late StreamController<
-                      List<
-                          mqtt_client.MqttReceivedMessage<
-                              mqtt_client.MqttMessage>>> streamController;
-
-                  setUp(
+                  test(
+                    '''
+                      should yield back a [Stream<IotUnityPlatformModel>]
+                      corresponding to the appropriate topic when the broker
+                      stream is not null
+                    ''',
                     () {
-                      streamController = StreamController<
+                      final streamController = StreamController<
                           List<
                               mqtt_client.MqttReceivedMessage<
                                   mqtt_client.MqttMessage>>>();
@@ -291,16 +291,7 @@ void main() {
                       ).thenAnswer(
                         (_) => streamController.stream,
                       );
-                    },
-                  );
 
-                  test(
-                    '''
-                      should yield back a [Stream<IotUnityPlatformModel>]
-                      corresponding to the appropriate topic when the broker
-                      stream is not null
-                    ''',
-                    () {
                       final result =
                           iotUnityPlatformRemoteDataSourceImplementation
                               .getDataFromIotUnityPlatform(
@@ -361,6 +352,90 @@ void main() {
                       }
                     },
                   );
+
+                  // test(
+                  //   '''
+                  //     should yield null when the stream coming from the
+                  //     broker does not correspond to the appropriate topic
+                  //   ''',
+                  //   () {
+                  //     final result =
+                  //         iotUnityPlatformRemoteDataSourceImplementation
+                  //             .getDataFromIotUnityPlatform(
+                  //       topicName: testTopicName,
+                  //     );
+                  //
+                  //     Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
+                  //       ..addAll(
+                  //         Uint8List.fromList(
+                  //           utf8.encode(
+                  //             jsonEncode(
+                  //               {
+                  //                 'humidity': (index + 1).toDouble(),
+                  //                 'temperature': (index + 1).toDouble(),
+                  //               },
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       );
+                  //
+                  //     final receivedMessages = List.generate(
+                  //       5,
+                  //       (index) => List.generate(
+                  //         1,
+                  //         (_) => mqtt_client.MqttReceivedMessage<
+                  //             mqtt_client.MqttPublishMessage>(
+                  //           testTopic1,
+                  //           mqtt_client.MqttPublishMessage()
+                  //             ..payload.message = computeUint8Buffer(
+                  //               index,
+                  //             ),
+                  //         ),
+                  //       ),
+                  //     );
+                  //
+                  //     expectLater(
+                  //       result,
+                  //       emits(
+                  //         null,
+                  //       ),
+                  //     );
+                  //
+                  //     for (final receivedMessagesList in receivedMessages) {
+                  //       streamController.add(
+                  //         receivedMessagesList,
+                  //       );
+                  //     }
+                  //   },
+                  // );
+
+                  test(
+                    '''
+                      should throw a [NoMessagesFromBrokerException] when
+                      calling [MqttClient.messagesFromBroker] returns a null
+                    ''',
+                    () async {
+                      when(
+                        mockMqttClient.messagesFromBroker,
+                      ).thenReturn(
+                        null,
+                      );
+
+                      final result =
+                          await iotUnityPlatformRemoteDataSourceImplementation
+                              .getDataFromIotUnityPlatform(
+                                topicName: testTopicName,
+                              )
+                              .toList();
+
+                      expect(
+                        result,
+                        throwsA(
+                          const TypeMatcher<NoMessagesFromBrokerException>(),
+                        ),
+                      );
+                    },
+                  );
                 },
               );
             },
@@ -411,12 +486,12 @@ void main() {
     },
   );
 
-  // test(
-  //   '''
-  //     should return [IotUnityPlatformModel] when
-  //     [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-  //     is called
-  //   ''',
-  //   () {},
-  // );
+// test(
+//   '''
+//     should return [IotUnityPlatformModel] when
+//     [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+//     is called
+//   ''',
+//   () {},
+// );
 }
