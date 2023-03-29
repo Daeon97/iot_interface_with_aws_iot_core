@@ -1,10 +1,11 @@
 // ignore_for_file: public_member_api_docs
 
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
@@ -33,89 +34,99 @@ class IotUnityPlatformRemoteDataSourceImplementation
   @override
   Stream<IotUnityPlatformModel> getDataFromIotUnityPlatform({
     required String topicName,
-  }) async* {
-    mqttClient
-      ..establishSecurityContext(
-        rootCertificateAuthority: dotenv.get(res.rootCertificateAuthorityKey),
-        privateKey: dotenv.get(res.privateKeyKey),
-        deviceCertificate: dotenv.get(res.deviceCertificateKey),
-      )
-      ..ensureAllOtherImportantStuffInitialized(
-        enableLogging: kDebugMode,
-        onBadCertificateSupplied: _onBadCertificateSupplied,
-        // onSubscribedToTopic: _onSubscribedToTopic,
-        onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
-        onDisconnectedFromBroker: _onDisconnectedFromBroker,
-      );
-    final connectionStatus = await mqttClient.connectToBroker();
-
-    if (connectionStatus != null &&
-        connectionStatus.state == mqtt_client.MqttConnectionState.connected) {
-      final subscription = mqttClient.subscribeToTopic(
-        topicName: topicName,
-        qualityOfService: mqtt_client.MqttQos.atMostOnce,
-      );
-
-      if (subscription != null) {
-        final messagesFromBroker = mqttClient.messagesFromBroker;
-
-        if (messagesFromBroker != null) {
-          await for (final message in messagesFromBroker) {
-            for (final mqttReceivedMessage in message) {
-              if (mqttReceivedMessage.topic == topicName) {
-                final publishedMessage = mqttReceivedMessage.payload
-                    as mqtt_client.MqttPublishMessage;
-                final uint8Buffer = publishedMessage.payload.message;
-                final uint8List = Uint8List.view(
-                  uint8Buffer.buffer,
-                  0,
-                  uint8Buffer.length,
-                );
-                final utf8Decoded = utf8.decode(
-                  uint8List,
-                );
-                final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
-                yield IotUnityPlatformModel.fromJson(
-                  json,
-                );
-              }
-              /*
-              TODO: Add else clause to prevent a possible Asynchronous Gap.
-                Also consider writing Tests for logic inside if block
-                refer to line 272 of corresponding test file
-              */
-            }
-          }
-        }
-        // else {
-        //   throw NoMessagesFromBrokerException(
-        //     message: sprintf(
-        //       res.noMessagesFromBrokerExceptionMessage,
-        //       [
-        //         connectionStatus.state,
-        //         connectionStatus.returnCode,
-        //         connectionStatus.disconnectionOrigin,
-        //       ],
-        //     ),
-        //   );
-        // }
-      } else {
-        // TODO: Implement else block
-      }
-    } else {
-      // TODO: Implement else block
-      // throw BrokerException(
-      //   message: sprintf(
-      //     res.brokerExceptionMessage,
-      //     [
-      //       connectionStatus?.state.name,
-      //       connectionStatus?.returnCode?.name,
-      //       connectionStatus?.disconnectionOrigin.name,
-      //     ],
-      //   ),
-      // );
-    }
+  }) {
+    final streamController = StreamController<IotUnityPlatformModel>(
+      onListen: () {},
+    );
+    return streamController.stream;
   }
+
+  // @override
+  // Stream<IotUnityPlatformModel> getDataFromIotUnityPlatform({
+  //   required String topicName,
+  // }) async* {
+  //   mqttClient
+  //     ..establishSecurityContext(
+  //       rootCertificateAuthority: dotenv.get(res.rootCertificateAuthorityKey),
+  //       privateKey: dotenv.get(res.privateKeyKey),
+  //       deviceCertificate: dotenv.get(res.deviceCertificateKey),
+  //     )
+  //     ..ensureAllOtherImportantStuffInitialized(
+  //       enableLogging: kDebugMode,
+  //       onBadCertificateSupplied: _onBadCertificateSupplied,
+  //       // onSubscribedToTopic: _onSubscribedToTopic,
+  //       onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
+  //       onDisconnectedFromBroker: _onDisconnectedFromBroker,
+  //     );
+  //   final connectionStatus = await mqttClient.connectToBroker();
+  //
+  //   if (connectionStatus != null &&
+  //       connectionStatus.state == mqtt_client.MqttConnectionState.connected) {
+  //     final subscription = mqttClient.subscribeToTopic(
+  //       topicName: topicName,
+  //       qualityOfService: mqtt_client.MqttQos.atMostOnce,
+  //     );
+  //
+  //     if (subscription != null) {
+  //       final messagesFromBroker = mqttClient.messagesFromBroker;
+  //
+  //       if (messagesFromBroker != null) {
+  //         await for (final message in messagesFromBroker) {
+  //           for (final mqttReceivedMessage in message) {
+  //             if (mqttReceivedMessage.topic == topicName) {
+  //               final publishedMessage = mqttReceivedMessage.payload
+  //                   as mqtt_client.MqttPublishMessage;
+  //               final uint8Buffer = publishedMessage.payload.message;
+  //               final uint8List = Uint8List.view(
+  //                 uint8Buffer.buffer,
+  //                 0,
+  //                 uint8Buffer.length,
+  //               );
+  //               final utf8Decoded = utf8.decode(
+  //                 uint8List,
+  //               );
+  //               final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
+  //               yield IotUnityPlatformModel.fromJson(
+  //                 json,
+  //               );
+  //             }
+  //             /*
+  //             TODO: Add else clause to prevent a possible Asynchronous Gap.
+  //               Also consider writing Tests for logic inside if block
+  //               refer to line 272 of corresponding test file
+  //             */
+  //           }
+  //         }
+  //       }
+  //       // else {
+  //       //   throw NoMessagesFromBrokerException(
+  //       //     message: sprintf(
+  //       //       res.noMessagesFromBrokerExceptionMessage,
+  //       //       [
+  //       //         connectionStatus.state,
+  //       //         connectionStatus.returnCode,
+  //       //         connectionStatus.disconnectionOrigin,
+  //       //       ],
+  //       //     ),
+  //       //   );
+  //       // }
+  //     } else {
+  //       // TODO: Implement else block
+  //     }
+  //   } else {
+  //     // TODO: Implement else block
+  //     // throw BrokerException(
+  //     //   message: sprintf(
+  //     //     res.brokerExceptionMessage,
+  //     //     [
+  //     //       connectionStatus?.state.name,
+  //     //       connectionStatus?.returnCode?.name,
+  //     //       connectionStatus?.disconnectionOrigin.name,
+  //     //     ],
+  //     //   ),
+  //     // );
+  //   }
+  // }
 
   bool _onBadCertificateSupplied(X509Certificate certificate) =>
       throw BadCertificateException(

@@ -47,6 +47,62 @@ void main() {
   const testDeviceCertificateKey = 'DEVICE_CERTIFICATE';
   const testEnableLogging = kDebugMode;
 
+  const testIotUnityPlatformModel = IotUnityPlatformModel(
+    humidity: 1.0,
+    temperature: 1.0,
+  );
+
+  group(
+    'getDataFromIotUnityPlatform',
+    () {
+      test(
+        '''
+          should ensure that
+          [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+          returns a [Stream<IotUnityPlatformModel>] when it is called
+        ''',
+        () {
+          final result = iotUnityPlatformRemoteDataSourceImplementation
+              .getDataFromIotUnityPlatform(
+            topicName: testTopicName,
+          );
+          expect(
+            result,
+            isA<Stream<IotUnityPlatformModel>>(),
+          );
+        },
+      );
+
+      test(
+        '''
+          should ensure that
+          [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+          emits [IotUnityPlatformModel] when listened to
+        ''',
+        () {
+          final result = iotUnityPlatformRemoteDataSourceImplementation
+              .getDataFromIotUnityPlatform(
+            topicName: testTopicName,
+          );
+
+          final streamSubscription = result.listen(
+            expectAsync1(
+              (iotUnityPlatformModel) {
+                expect(
+                  iotUnityPlatformModel,
+                  testIotUnityPlatformModel,
+                );
+              },
+            ),
+          );
+
+          // ignore: cascade_invocations
+          streamSubscription.cancel();
+        },
+      );
+    },
+  );
+
   // bool testOnBadCertificateSupplied(X509Certificate certificate) =>
   //     throw BadCertificateException(
   //       message: sprintf(
@@ -83,415 +139,406 @@ void main() {
   //       ),
   //     );
 
-  group(
-    'getDataFromIotUnityPlatform',
-    () {
-      test(
-        '''
-        should establish a security context first, ensure all other important
-        stuff are initialized second and thereafter try to establish a connection
-        to AWS IoT Core by calling [MqttClient.establishSecurityContext],
-        [MqttClient.ensureAllOtherImportantStuffInitialized] and
-        [MqttClient.connectToBroker] in that order when
-        [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-        is called
-      ''',
-        () async {
-          await iotUnityPlatformRemoteDataSourceImplementation
-              .getDataFromIotUnityPlatform(
-                topicName: testTopicName,
-              )
-              .toList();
-          verifyInOrder(
-            [
-              mockMqttClient.establishSecurityContext(
-                rootCertificateAuthority:
-                    dotenv.get(testRootCertificateAuthoritykey),
-                privateKey: dotenv.get(testPrivateKeyKey),
-                deviceCertificate: dotenv.get(testDeviceCertificateKey),
-              ),
-              mockMqttClient.ensureAllOtherImportantStuffInitialized(
-                enableLogging: testEnableLogging,
-                onBadCertificateSupplied: argThat(
-                  isA<Function>(),
-                  named: 'onBadCertificateSupplied',
-                ),
-                // onSubscribedToTopic: argThat(
-                //   isA<Function>(),
-                //   named: 'onSubscribedToTopic',
-                // ),
-                onSubscriptionToTopicFailed: argThat(
-                  isA<Function>(),
-                  named: 'onSubscriptionToTopicFailed',
-                ),
-                onDisconnectedFromBroker: argThat(
-                  isA<Function>(),
-                  named: 'onDisconnectedFromBroker',
-                ),
-              ),
-              mockMqttClient.connectToBroker(),
-            ],
-          )
-            ..[0].called(1)
-            ..[1].called(1)
-            ..[2].called(1);
-        },
-      );
-
-      // group(
-      //   '''
-      //     [MqttClient.ensureAllOtherImportantStuffInitialized]
-      //   ''',
-      //   () {
-      //     setUp(
-      //       () async {
-      //         await iotUnityPlatformRemoteDataSourceImplementation
-      //             .getDataFromIotUnityPlatform(
-      //               topicName: testTopicName,
-      //             )
-      //             .toList();
-      //       },
-      //     );
-      //
-      //     test(
-      //       '''
-      //         should ensure that [onBadCertificateSupplied], [onSubscribedToTopic],
-      //         [onSubscriptionToTopicFailed] and [onDisconnectedFromBroker] are passed
-      //         the correct arguments when [MqttClient.ensureAllOtherImportantStuffInitialized]
-      //         is called
-      //       ''',
-      //       () async {
-      //         // when(
-      //         //   mockMqttClient.ensureAllOtherImportantStuffInitialized(
-      //         //     enableLogging: anyNamed(
-      //         //       'enableLogging',
-      //         //     ),
-      //         //     onBadCertificateSupplied: anyNamed(
-      //         //       'onBadCertificateSupplied',
-      //         //     ),
-      //         //     onSubscribedToTopic: anyNamed(
-      //         //       'onSubscribedToTopic',
-      //         //     ),
-      //         //     onSubscriptionToTopicFailed: anyNamed(
-      //         //       'onSubscriptionToTopicFailed',
-      //         //     ),
-      //         //     onDisconnectedFromBroker: anyNamed(
-      //         //       'onDisconnectedFromBroker',
-      //         //     ),
-      //         //   ),
-      //         // ).thenReturn(const TypeMatcher<void>());
-      //
-      //         verify(
-      //           () => mockMqttClient.ensureAllOtherImportantStuffInitialized(
-      //             enableLogging: testEnableLogging,
-      //             // onBadCertificateSupplied: (_) => throwsA(
-      //             //   TypeMatcher<BadCertificateException>(),
-      //             // ),
-      //             onDisconnectedFromBroker: () => throwsA(
-      //               const TypeMatcher<UnsolicitedDisconnectionException>(),
-      //             ),
-      //             onSubscriptionToTopicFailed: (_) => throwsA(
-      //               const TypeMatcher<TopicSubscriptionException>(),
-      //             ),
-      //           ),
-      //         );
-      //       },
-      //     );
-      //   },
-      // );
-
-      group(
-        'connectToBroker success',
-        () {
-          setUp(
-            () async {
-              final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
-                ..state = mqtt_client.MqttConnectionState.connected;
-              when(
-                mockMqttClient.connectToBroker(),
-              ).thenAnswer(
-                (_) async => expectedAnswer,
-              );
-            },
-          );
-
-          test(
-            '''
-              should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
-              when the connection to AWS IoT Core broker is successful
-            ''',
-            () async {
-              await iotUnityPlatformRemoteDataSourceImplementation
-                  .getDataFromIotUnityPlatform(
-                    topicName: testTopicName,
-                  )
-                  .toList();
-              verify(
-                mockMqttClient.subscribeToTopic(
-                  topicName: testTopicName,
-                  qualityOfService: testQualityOfService,
-                ),
-              ).called(1);
-            },
-          );
-
-          group(
-            'subscribe success',
-            () {
-              setUp(
-                () async {
-                  final expectedAnswer = mqtt_client.Subscription();
-                  when(
-                    mockMqttClient.subscribeToTopic(
-                      topicName: testTopicName,
-                      qualityOfService: testQualityOfService,
-                    ),
-                  ).thenAnswer(
-                    (_) => expectedAnswer,
-                  );
-                },
-              );
-
-              test(
-                '''
-                  should call the [MqttClient.messagesFromBroker] getter once
-                  when the client has successfully subscribed to the desired topic
-                ''',
-                () async {
-                  await iotUnityPlatformRemoteDataSourceImplementation
-                      .getDataFromIotUnityPlatform(
-                        topicName: testTopicName,
-                      )
-                      .toList();
-                  verify(
-                    mockMqttClient.messagesFromBroker,
-                  ).called(1);
-                },
-              );
-
-              /*TODO: Consider writing tests for logic inside await for */
-
-              group(
-                'messages from broker',
-                () {
-                  test(
-                    '''
-                      should yield back a [Stream<IotUnityPlatformModel>]
-                      corresponding to the appropriate topic when the broker
-                      stream is not null
-                    ''',
-                    () {
-                      final streamController = StreamController<
-                          List<
-                              mqtt_client.MqttReceivedMessage<
-                                  mqtt_client.MqttMessage>>>();
-                      // controller.
-                      when(
-                        mockMqttClient.messagesFromBroker,
-                      ).thenAnswer(
-                        (_) => streamController.stream,
-                      );
-
-                      final result =
-                          iotUnityPlatformRemoteDataSourceImplementation
-                              .getDataFromIotUnityPlatform(
-                        topicName: testTopicName,
-                      );
-
-                      final expectedMessages = List.generate(
-                        2,
-                        (index) => IotUnityPlatformModel(
-                          humidity: index == 0 ? 2.toDouble() : 4.toDouble(),
-                          temperature: index == 0 ? 2.toDouble() : 4.toDouble(),
-                        ),
-                      );
-
-                      Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
-                        ..addAll(
-                          Uint8List.fromList(
-                            utf8.encode(
-                              jsonEncode(
-                                {
-                                  'humidity': (index + 1).toDouble(),
-                                  'temperature': (index + 1).toDouble(),
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-
-                      final receivedMessages = List.generate(
-                        5,
-                        (index) => List.generate(
-                          1,
-                          (_) => mqtt_client.MqttReceivedMessage<
-                              mqtt_client.MqttPublishMessage>(
-                            (index + 1) % 2 != 0 ? testTopic1 : testTopicName,
-                            mqtt_client.MqttPublishMessage()
-                              ..payload.message = computeUint8Buffer(
-                                index,
-                              ),
-                          ),
-                        ),
-                      );
-
-                      expectLater(
-                        result,
-                        emitsInOrder(
-                          [
-                            expectedMessages.first,
-                            expectedMessages.last,
-                          ],
-                        ),
-                      );
-
-                      for (final receivedMessagesList in receivedMessages) {
-                        streamController.add(
-                          receivedMessagesList,
-                        );
-                      }
-                    },
-                  );
-
-                  // test(
-                  //   '''
-                  //     should yield null when the stream coming from the
-                  //     broker does not correspond to the appropriate topic
-                  //   ''',
-                  //   () {
-                  //     final result =
-                  //         iotUnityPlatformRemoteDataSourceImplementation
-                  //             .getDataFromIotUnityPlatform(
-                  //       topicName: testTopicName,
-                  //     );
-                  //
-                  //     Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
-                  //       ..addAll(
-                  //         Uint8List.fromList(
-                  //           utf8.encode(
-                  //             jsonEncode(
-                  //               {
-                  //                 'humidity': (index + 1).toDouble(),
-                  //                 'temperature': (index + 1).toDouble(),
-                  //               },
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       );
-                  //
-                  //     final receivedMessages = List.generate(
-                  //       5,
-                  //       (index) => List.generate(
-                  //         1,
-                  //         (_) => mqtt_client.MqttReceivedMessage<
-                  //             mqtt_client.MqttPublishMessage>(
-                  //           testTopic1,
-                  //           mqtt_client.MqttPublishMessage()
-                  //             ..payload.message = computeUint8Buffer(
-                  //               index,
-                  //             ),
-                  //         ),
-                  //       ),
-                  //     );
-                  //
-                  //     expectLater(
-                  //       result,
-                  //       emits(
-                  //         null,
-                  //       ),
-                  //     );
-                  //
-                  //     for (final receivedMessagesList in receivedMessages) {
-                  //       streamController.add(
-                  //         receivedMessagesList,
-                  //       );
-                  //     }
-                  //   },
-                  // );
-
-                  test(
-                    '''
-                      should throw a [NoMessagesFromBrokerException] when
-                      calling [MqttClient.messagesFromBroker] returns a null
-                    ''',
-                    () async {
-                      when(
-                        mockMqttClient.messagesFromBroker,
-                      ).thenReturn(
-                        null,
-                      );
-
-                      final result =
-                          await iotUnityPlatformRemoteDataSourceImplementation
-                              .getDataFromIotUnityPlatform(
-                                topicName: testTopicName,
-                              )
-                              .toList();
-
-                      expect(
-                        result,
-                        throwsA(
-                          const TypeMatcher<NoMessagesFromBrokerException>(),
-                        ),
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          );
-        },
-      );
-
-      // group(
-      //   'connectToBroker failed',
-      //   () {
-      //     setUp(
-      //       () {
-      //         final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
-      //           ..state = mqtt_client.MqttConnectionState.disconnected
-      //           ..disconnectionOrigin =
-      //               mqtt_client.MqttDisconnectionOrigin.unsolicited;
-      //         when(mockMqttClient.connectToBroker()).thenAnswer(
-      //           (_) async => expectedAnswer,
-      //         );
-      //       },
-      //     );
-      //
-      //     test(
-      //       '''
-      //         should throw [BrokerException] when the connection
-      //         to AWS IoT Core broker fails
-      //       ''',
-      //       () async {
-      //         final result =
-      //             await iotUnityPlatformRemoteDataSourceImplementation
-      //                 .getDataFromIotUnityPlatform(
-      //                   topicName: testTopicName,
-      //                 )
-      //                 .toList();
-      //         verifyNoMoreInteractions(
-      //           mockMqttClient,
-      //         );
-      //         expect(
-      //           result,
-      //           throwsA(
-      //             const TypeMatcher<BrokerException>(),
-      //           ),
-      //         );
-      //       },
-      //     );
-      //   },
-      // );
-    },
-  );
-
-// test(
-//   '''
-//     should return [IotUnityPlatformModel] when
-//     [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
-//     is called
-//   ''',
-//   () {},
-// );
+  // group(
+  //   'getDataFromIotUnityPlatform',
+  //   () {
+  //     test(
+  //       '''
+  //       should establish a security context first, ensure all other important
+  //       stuff are initialized second and thereafter try to establish a connection
+  //       to AWS IoT Core by calling [MqttClient.establishSecurityContext],
+  //       [MqttClient.ensureAllOtherImportantStuffInitialized] and
+  //       [MqttClient.connectToBroker] in that order when
+  //       [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
+  //       is called
+  //     ''',
+  //       () async {
+  //         await iotUnityPlatformRemoteDataSourceImplementation
+  //             .getDataFromIotUnityPlatform(
+  //               topicName: testTopicName,
+  //             )
+  //             .toList();
+  //         verifyInOrder(
+  //           [
+  //             mockMqttClient.establishSecurityContext(
+  //               rootCertificateAuthority:
+  //                   dotenv.get(testRootCertificateAuthoritykey),
+  //               privateKey: dotenv.get(testPrivateKeyKey),
+  //               deviceCertificate: dotenv.get(testDeviceCertificateKey),
+  //             ),
+  //             mockMqttClient.ensureAllOtherImportantStuffInitialized(
+  //               enableLogging: testEnableLogging,
+  //               onBadCertificateSupplied: argThat(
+  //                 isA<Function>(),
+  //                 named: 'onBadCertificateSupplied',
+  //               ),
+  //               // onSubscribedToTopic: argThat(
+  //               //   isA<Function>(),
+  //               //   named: 'onSubscribedToTopic',
+  //               // ),
+  //               onSubscriptionToTopicFailed: argThat(
+  //                 isA<Function>(),
+  //                 named: 'onSubscriptionToTopicFailed',
+  //               ),
+  //               onDisconnectedFromBroker: argThat(
+  //                 isA<Function>(),
+  //                 named: 'onDisconnectedFromBroker',
+  //               ),
+  //             ),
+  //             mockMqttClient.connectToBroker(),
+  //           ],
+  //         )
+  //           ..[0].called(1)
+  //           ..[1].called(1)
+  //           ..[2].called(1);
+  //       },
+  //     );
+  //
+  //     // group(
+  //     //   '''
+  //     //     [MqttClient.ensureAllOtherImportantStuffInitialized]
+  //     //   ''',
+  //     //   () {
+  //     //     setUp(
+  //     //       () async {
+  //     //         await iotUnityPlatformRemoteDataSourceImplementation
+  //     //             .getDataFromIotUnityPlatform(
+  //     //               topicName: testTopicName,
+  //     //             )
+  //     //             .toList();
+  //     //       },
+  //     //     );
+  //     //
+  //     //     test(
+  //     //       '''
+  //     //         should ensure that [onBadCertificateSupplied], [onSubscribedToTopic],
+  //     //         [onSubscriptionToTopicFailed] and [onDisconnectedFromBroker] are passed
+  //     //         the correct arguments when [MqttClient.ensureAllOtherImportantStuffInitialized]
+  //     //         is called
+  //     //       ''',
+  //     //       () async {
+  //     //         // when(
+  //     //         //   mockMqttClient.ensureAllOtherImportantStuffInitialized(
+  //     //         //     enableLogging: anyNamed(
+  //     //         //       'enableLogging',
+  //     //         //     ),
+  //     //         //     onBadCertificateSupplied: anyNamed(
+  //     //         //       'onBadCertificateSupplied',
+  //     //         //     ),
+  //     //         //     onSubscribedToTopic: anyNamed(
+  //     //         //       'onSubscribedToTopic',
+  //     //         //     ),
+  //     //         //     onSubscriptionToTopicFailed: anyNamed(
+  //     //         //       'onSubscriptionToTopicFailed',
+  //     //         //     ),
+  //     //         //     onDisconnectedFromBroker: anyNamed(
+  //     //         //       'onDisconnectedFromBroker',
+  //     //         //     ),
+  //     //         //   ),
+  //     //         // ).thenReturn(const TypeMatcher<void>());
+  //     //
+  //     //         verify(
+  //     //           () => mockMqttClient.ensureAllOtherImportantStuffInitialized(
+  //     //             enableLogging: testEnableLogging,
+  //     //             // onBadCertificateSupplied: (_) => throwsA(
+  //     //             //   TypeMatcher<BadCertificateException>(),
+  //     //             // ),
+  //     //             onDisconnectedFromBroker: () => throwsA(
+  //     //               const TypeMatcher<UnsolicitedDisconnectionException>(),
+  //     //             ),
+  //     //             onSubscriptionToTopicFailed: (_) => throwsA(
+  //     //               const TypeMatcher<TopicSubscriptionException>(),
+  //     //             ),
+  //     //           ),
+  //     //         );
+  //     //       },
+  //     //     );
+  //     //   },
+  //     // );
+  //
+  //     group(
+  //       'connectToBroker success',
+  //       () {
+  //         setUp(
+  //           () async {
+  //             final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+  //               ..state = mqtt_client.MqttConnectionState.connected;
+  //             when(
+  //               mockMqttClient.connectToBroker(),
+  //             ).thenAnswer(
+  //               (_) async => expectedAnswer,
+  //             );
+  //           },
+  //         );
+  //
+  //         test(
+  //           '''
+  //             should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
+  //             when the connection to AWS IoT Core broker is successful
+  //           ''',
+  //           () async {
+  //             await iotUnityPlatformRemoteDataSourceImplementation
+  //                 .getDataFromIotUnityPlatform(
+  //                   topicName: testTopicName,
+  //                 )
+  //                 .toList();
+  //             verify(
+  //               mockMqttClient.subscribeToTopic(
+  //                 topicName: testTopicName,
+  //                 qualityOfService: testQualityOfService,
+  //               ),
+  //             ).called(1);
+  //           },
+  //         );
+  //
+  //         group(
+  //           'subscribe success',
+  //           () {
+  //             setUp(
+  //               () async {
+  //                 final expectedAnswer = mqtt_client.Subscription();
+  //                 when(
+  //                   mockMqttClient.subscribeToTopic(
+  //                     topicName: testTopicName,
+  //                     qualityOfService: testQualityOfService,
+  //                   ),
+  //                 ).thenAnswer(
+  //                   (_) => expectedAnswer,
+  //                 );
+  //               },
+  //             );
+  //
+  //             test(
+  //               '''
+  //                 should call the [MqttClient.messagesFromBroker] getter once
+  //                 when the client has successfully subscribed to the desired topic
+  //               ''',
+  //               () async {
+  //                 await iotUnityPlatformRemoteDataSourceImplementation
+  //                     .getDataFromIotUnityPlatform(
+  //                       topicName: testTopicName,
+  //                     )
+  //                     .toList();
+  //                 verify(
+  //                   mockMqttClient.messagesFromBroker,
+  //                 ).called(1);
+  //               },
+  //             );
+  //
+  //             /*TODO: Consider writing tests for logic inside await for */
+  //
+  //             group(
+  //               'messages from broker',
+  //               () {
+  //                 test(
+  //                   '''
+  //                     should yield back a [Stream<IotUnityPlatformModel>]
+  //                     corresponding to the appropriate topic when the broker
+  //                     stream is not null
+  //                   ''',
+  //                   () {
+  //                     final streamController = StreamController<
+  //                         List<
+  //                             mqtt_client.MqttReceivedMessage<
+  //                                 mqtt_client.MqttMessage>>>();
+  //                     // controller.
+  //                     when(
+  //                       mockMqttClient.messagesFromBroker,
+  //                     ).thenAnswer(
+  //                       (_) => streamController.stream,
+  //                     );
+  //
+  //                     final result =
+  //                         iotUnityPlatformRemoteDataSourceImplementation
+  //                             .getDataFromIotUnityPlatform(
+  //                       topicName: testTopicName,
+  //                     );
+  //
+  //                     final expectedMessages = List.generate(
+  //                       2,
+  //                       (index) => IotUnityPlatformModel(
+  //                         humidity: index == 0 ? 2.toDouble() : 4.toDouble(),
+  //                         temperature: index == 0 ? 2.toDouble() : 4.toDouble(),
+  //                       ),
+  //                     );
+  //
+  //                     Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
+  //                       ..addAll(
+  //                         Uint8List.fromList(
+  //                           utf8.encode(
+  //                             jsonEncode(
+  //                               {
+  //                                 'humidity': (index + 1).toDouble(),
+  //                                 'temperature': (index + 1).toDouble(),
+  //                               },
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       );
+  //
+  //                     final receivedMessages = List.generate(
+  //                       5,
+  //                       (index) => List.generate(
+  //                         1,
+  //                         (_) => mqtt_client.MqttReceivedMessage<
+  //                             mqtt_client.MqttPublishMessage>(
+  //                           (index + 1) % 2 != 0 ? testTopic1 : testTopicName,
+  //                           mqtt_client.MqttPublishMessage()
+  //                             ..payload.message = computeUint8Buffer(
+  //                               index,
+  //                             ),
+  //                         ),
+  //                       ),
+  //                     );
+  //
+  //                     expectLater(
+  //                       result,
+  //                       emitsInOrder(
+  //                         [
+  //                           expectedMessages.first,
+  //                           expectedMessages.last,
+  //                         ],
+  //                       ),
+  //                     );
+  //
+  //                     for (final receivedMessagesList in receivedMessages) {
+  //                       streamController.add(
+  //                         receivedMessagesList,
+  //                       );
+  //                     }
+  //                   },
+  //                 );
+  //
+  //                 // test(
+  //                 //   '''
+  //                 //     should yield null when the stream coming from the
+  //                 //     broker does not correspond to the appropriate topic
+  //                 //   ''',
+  //                 //   () {
+  //                 //     final result =
+  //                 //         iotUnityPlatformRemoteDataSourceImplementation
+  //                 //             .getDataFromIotUnityPlatform(
+  //                 //       topicName: testTopicName,
+  //                 //     );
+  //                 //
+  //                 //     Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
+  //                 //       ..addAll(
+  //                 //         Uint8List.fromList(
+  //                 //           utf8.encode(
+  //                 //             jsonEncode(
+  //                 //               {
+  //                 //                 'humidity': (index + 1).toDouble(),
+  //                 //                 'temperature': (index + 1).toDouble(),
+  //                 //               },
+  //                 //             ),
+  //                 //           ),
+  //                 //         ),
+  //                 //       );
+  //                 //
+  //                 //     final receivedMessages = List.generate(
+  //                 //       5,
+  //                 //       (index) => List.generate(
+  //                 //         1,
+  //                 //         (_) => mqtt_client.MqttReceivedMessage<
+  //                 //             mqtt_client.MqttPublishMessage>(
+  //                 //           testTopic1,
+  //                 //           mqtt_client.MqttPublishMessage()
+  //                 //             ..payload.message = computeUint8Buffer(
+  //                 //               index,
+  //                 //             ),
+  //                 //         ),
+  //                 //       ),
+  //                 //     );
+  //                 //
+  //                 //     expectLater(
+  //                 //       result,
+  //                 //       emits(
+  //                 //         null,
+  //                 //       ),
+  //                 //     );
+  //                 //
+  //                 //     for (final receivedMessagesList in receivedMessages) {
+  //                 //       streamController.add(
+  //                 //         receivedMessagesList,
+  //                 //       );
+  //                 //     }
+  //                 //   },
+  //                 // );
+  //
+  //                 test(
+  //                   '''
+  //                     should throw a [NoMessagesFromBrokerException] when
+  //                     calling [MqttClient.messagesFromBroker] returns a null
+  //                   ''',
+  //                   () async {
+  //                     when(
+  //                       mockMqttClient.messagesFromBroker,
+  //                     ).thenReturn(
+  //                       null,
+  //                     );
+  //
+  //                     final result =
+  //                         await iotUnityPlatformRemoteDataSourceImplementation
+  //                             .getDataFromIotUnityPlatform(
+  //                               topicName: testTopicName,
+  //                             )
+  //                             .toList();
+  //
+  //                     expect(
+  //                       result,
+  //                       throwsA(
+  //                         const TypeMatcher<NoMessagesFromBrokerException>(),
+  //                       ),
+  //                     );
+  //                   },
+  //                 );
+  //               },
+  //             );
+  //           },
+  //         );
+  //       },
+  //     );
+  //
+  //     // group(
+  //     //   'connectToBroker failed',
+  //     //   () {
+  //     //     setUp(
+  //     //       () {
+  //     //         final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+  //     //           ..state = mqtt_client.MqttConnectionState.disconnected
+  //     //           ..disconnectionOrigin =
+  //     //               mqtt_client.MqttDisconnectionOrigin.unsolicited;
+  //     //         when(mockMqttClient.connectToBroker()).thenAnswer(
+  //     //           (_) async => expectedAnswer,
+  //     //         );
+  //     //       },
+  //     //     );
+  //     //
+  //     //     test(
+  //     //       '''
+  //     //         should throw [BrokerException] when the connection
+  //     //         to AWS IoT Core broker fails
+  //     //       ''',
+  //     //       () async {
+  //     //         final result =
+  //     //             await iotUnityPlatformRemoteDataSourceImplementation
+  //     //                 .getDataFromIotUnityPlatform(
+  //     //                   topicName: testTopicName,
+  //     //                 )
+  //     //                 .toList();
+  //     //         verifyNoMoreInteractions(
+  //     //           mockMqttClient,
+  //     //         );
+  //     //         expect(
+  //     //           result,
+  //     //           throwsA(
+  //     //             const TypeMatcher<BrokerException>(),
+  //     //           ),
+  //     //         );
+  //     //       },
+  //     //     );
+  //     //   },
+  //     // );
+  //   },
+  // );
 }
