@@ -36,36 +36,41 @@ class IotUnityPlatformRemoteDataSourceImplementation
     required String topicName,
   }) {
     final streamController = StreamController<IotUnityPlatformModel>(
-      onListen: () {},
+      onListen: () async {
+        mqttClient
+          ..establishSecurityContext(
+            rootCertificateAuthority:
+                dotenv.get(res.rootCertificateAuthorityKey),
+            privateKey: dotenv.get(res.privateKeyKey),
+            deviceCertificate: dotenv.get(res.deviceCertificateKey),
+          )
+          ..ensureAllOtherImportantStuffInitialized(
+            enableLogging: kDebugMode,
+            onBadCertificateSupplied: _onBadCertificateSupplied,
+            // onSubscribedToTopic: _onSubscribedToTopic,
+            onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
+            onDisconnectedFromBroker: _onDisconnectedFromBroker,
+          );
+        final connectionStatus = await mqttClient.connectToBroker();
+
+        if (connectionStatus != null &&
+            connectionStatus.state ==
+                mqtt_client.MqttConnectionState.connected) {
+          mqttClient.subscribeToTopic(
+            topicName: topicName,
+            qualityOfService: mqtt_client.MqttQos.atMostOnce,
+          );
+        }
+      },
+      // onCancel: () {
+      //   /*
+      //    TODO: Write test(s) for onCancel before implementing
+      //   */
+      // },
     );
     return streamController.stream;
   }
 
-  // @override
-  // Stream<IotUnityPlatformModel> getDataFromIotUnityPlatform({
-  //   required String topicName,
-  // }) async* {
-  //   mqttClient
-  //     ..establishSecurityContext(
-  //       rootCertificateAuthority: dotenv.get(res.rootCertificateAuthorityKey),
-  //       privateKey: dotenv.get(res.privateKeyKey),
-  //       deviceCertificate: dotenv.get(res.deviceCertificateKey),
-  //     )
-  //     ..ensureAllOtherImportantStuffInitialized(
-  //       enableLogging: kDebugMode,
-  //       onBadCertificateSupplied: _onBadCertificateSupplied,
-  //       // onSubscribedToTopic: _onSubscribedToTopic,
-  //       onSubscriptionToTopicFailed: _onSubscriptionToTopicFailed,
-  //       onDisconnectedFromBroker: _onDisconnectedFromBroker,
-  //     );
-  //   final connectionStatus = await mqttClient.connectToBroker();
-  //
-  //   if (connectionStatus != null &&
-  //       connectionStatus.state == mqtt_client.MqttConnectionState.connected) {
-  //     final subscription = mqttClient.subscribeToTopic(
-  //       topicName: topicName,
-  //       qualityOfService: mqtt_client.MqttQos.atMostOnce,
-  //     );
   //
   //     if (subscription != null) {
   //       final messagesFromBroker = mqttClient.messagesFromBroker;
