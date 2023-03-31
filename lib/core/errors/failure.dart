@@ -31,3 +31,21 @@ class UnsolicitedDisconnectionFailure extends Failure {
     required super.message,
   });
 }
+
+class CouldNotConnectToBrokerFailure extends Failure {
+  const CouldNotConnectToBrokerFailure({
+    required super.message,
+  });
+}
+
+class MessageTopicMismatchFailure extends Failure {
+  const MessageTopicMismatchFailure({
+    required super.message,
+  });
+}
+
+class UnknownFailure extends Failure {
+  const UnknownFailure({
+    required super.message,
+  });
+}

@@ -31,3 +31,15 @@ class UnsolicitedDisconnectionException extends CustomException {
     required super.message,
   });
 }
+
+class CouldNotConnectToBrokerException extends CustomException {
+  const CouldNotConnectToBrokerException({
+    required super.message,
+  });
+}
+
+class MessageTopicMismatchException extends CustomException {
+  const MessageTopicMismatchException({
+    required super.message,
+  });
+}

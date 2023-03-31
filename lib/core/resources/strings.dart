@@ -22,7 +22,11 @@ const badCertificateExceptionMessage =
 const topicSubscriptionExceptionMessage =
     'Topic subscription exception. Topic name -> %s';
 const unsolicitedDisconnectionExceptionMessage =
-    'Unsolicited disconnection -> %s';
+    'Unsolicited disconnection exception -> %s';
+const couldNotConnectToBrokerExceptionMessage =
+    '''Could not connect to broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
+const messageTopicMismatchExceptionMessage =
+    '''Message topic mismatch exception. MQTT received message -> payload: %s, topic: %s, as published message -> payload message: %s''';
 
 // failure messages
 const noMessagesFromBrokerFailureMessage = 'No data';
@@ -31,3 +35,6 @@ const topicSubscriptionFailureMessage =
     'There was an issue subscribing to the appropriate topic';
 const unsolicitedDisconnectionFailureMessage =
     'Client unexpectedly disconnected';
+const couldNotConnectToBrokerFailureMessage = 'Unable to connect to broker';
+const messageTopicMismatchFailureMessage = '''...''';
+const unknownFailureMessage = '''...''';

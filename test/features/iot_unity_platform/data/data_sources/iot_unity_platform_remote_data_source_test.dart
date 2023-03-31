@@ -97,16 +97,34 @@ void main() {
           [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
           returns a [Stream<IotUnityPlatformModel>]
         ''',
-        () {
+        () async {
           final result = iotUnityPlatformRemoteDataSourceImplementation
               .getDataFromIotUnityPlatform(
             topicName: testTopicName,
           );
+          // ignore: cancel_subscriptions
+          // final streamSubscription = result.listen((_) {});
+
           expect(
             result,
             isA<Stream<IotUnityPlatformModel>>(),
           );
-          // also expect that this stream emits something
+
+          // try {
+          //   await expectLater(
+          //     result,
+          //     emitsAnyOf(
+          //       const [
+          //         TypeMatcher<IotUnityPlatformModel>(),
+          //         TypeMatcher<CustomException>(),
+          //       ],
+          //     ),
+          //   );
+          // } catch(error) {
+          //   print(error);
+          // }
+
+          // streamSubscription.cancel();
         },
       );
 
@@ -175,38 +193,6 @@ void main() {
                 ..[0].called(1)
                 ..[1].called(1)
                 ..[2].called(1);
-
-              // group(
-              //   'onBadCertificateSupplied',
-              //   () {
-              //     setUp(
-              //       () {
-              //         when(mockMqttClient.)
-              //             .thenAnswer(
-              //           (realInvocation) {},
-              //         );
-              //       },
-              //     );
-              //
-              //     test(
-              //       '''
-              //         should throw a [BadCertificateException] when bad
-              //         certificate(s) are supplied
-              //       ''',
-              //       () {},
-              //     );
-              //   },
-              // );
-              //
-              // group(
-              //   'onSubscriptionToTopicFailed',
-              //   () {},
-              // );
-              //
-              // group(
-              //   'onDisconnectedFromBroker',
-              //   () {},
-              // );
             },
           );
 
