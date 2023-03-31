@@ -36,5 +36,6 @@ const topicSubscriptionFailureMessage =
 const unsolicitedDisconnectionFailureMessage =
     'Client unexpectedly disconnected';
 const couldNotConnectToBrokerFailureMessage = 'Unable to connect to broker';
-const messageTopicMismatchFailureMessage = '''...''';
-const unknownFailureMessage = '''...''';
+const messageTopicMismatchFailureMessage =
+    'Received message topic does not correspond to current topic';
+const unknownFailureMessage = 'An unknown error occurred';

@@ -100,9 +100,7 @@ class IotUnityPlatformRepositoryImplementation
       },
       onCancel: () async {
         await remoteDataSourceStreamSubscription.cancel();
-
         await streamController.sink.close();
-
         await streamController.close();
       },
     );
