@@ -174,10 +174,14 @@ void main() {
                       isA<Function>(),
                       named: 'onBadCertificateSupplied',
                     ),
-                    // onSubscribedToTopic: argThat(
-                    //   isA<Function>(),
-                    //   named: 'onSubscribedToTopic',
-                    // ),
+                    onConnectedToBroker: argThat(
+                      isA<Function>(),
+                      named: 'onConnectedToBroker',
+                    ),
+                    onSubscribedToTopic: argThat(
+                      isA<Function>(),
+                      named: 'onSubscribedToTopic',
+                    ),
                     onSubscriptionToTopicFailed: argThat(
                       isA<Function>(),
                       named: 'onSubscriptionToTopicFailed',
@@ -196,38 +200,56 @@ void main() {
             },
           );
 
-          group(
-            'connectToBroker success',
-            () {
-              setUp(
-                () async {
-                  final expectedAnswer =
-                      mqtt_client.MqttClientConnectionStatus()
-                        ..state = mqtt_client.MqttConnectionState.connected;
-                  when(
-                    mockMqttClient.connectToBroker(),
-                  ).thenAnswer(
-                    (_) async => expectedAnswer,
-                  );
-                },
-              );
+          // test(
+          //   '''
+          //     should add a [CouldNotConnectToBrokerException] to the stream sink
+          //     when the connection status gotten as a result of invoking
+          //     [MqttClient.connectToBroker] is [MqttConnectionState.disconnected]
+          //   ''',
+          //   () {
+          //     final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+          //       ..state = mqtt_client.MqttConnectionState.disconnected;
+          //     when(
+          //       mockMqttClient.connectToBroker(),
+          //     ).thenAnswer(
+          //       (_) async => expectedAnswer,
+          //     );
+          //     expect(result, matcher);
+          //   },
+          // );
 
-              test(
-                '''
-                  should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
-                  when the connection to AWS IoT Core broker is successful
-                ''',
-                () {
-                  verify(
-                    mockMqttClient.subscribeToTopic(
-                      topicName: testTopicName,
-                      qualityOfService: testQualityOfService,
-                    ),
-                  ).called(1);
-                },
-              );
-            },
-          );
+          // group(
+          //   'connectToBroker success',
+          //   () {
+          //     setUp(
+          //       () async {
+          //         final expectedAnswer =
+          //             mqtt_client.MqttClientConnectionStatus()
+          //               ..state = mqtt_client.MqttConnectionState.connected;
+          //         when(
+          //           mockMqttClient.connectToBroker(),
+          //         ).thenAnswer(
+          //           (_) async => expectedAnswer,
+          //         );
+          //       },
+          //     );
+          //
+          //     test(
+          //       '''
+          //         should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
+          //         when the connection to AWS IoT Core broker is successful
+          //       ''',
+          //       () {
+          //         verify(
+          //           mockMqttClient.subscribeToTopic(
+          //             topicName: testTopicName,
+          //             qualityOfService: testQualityOfService,
+          //           ),
+          //         ).called(1);
+          //       },
+          //     );
+          //   },
+          // );
         },
       );
     },

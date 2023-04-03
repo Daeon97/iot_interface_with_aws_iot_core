@@ -44,14 +44,16 @@ class MqttClient {
   }
 
   void ensureAllOtherImportantStuffInitialized({
+    required bool Function(X509Certificate certificate)
+        onBadCertificateSupplied,
+    required void Function() onConnectedToBroker,
+    required void Function(String) onSubscribedToTopic,
+    required void Function(String) onSubscriptionToTopicFailed,
+    required void Function() onDisconnectedFromBroker,
     bool enableLogging = true,
     int port = res.defaultMqttPort,
     int keepAlivePeriod = res.defaultKeepAlivePeriod,
     String clientId = res.defaultClientId,
-    bool Function(X509Certificate certificate)? onBadCertificateSupplied,
-    void Function(String)? onSubscribedToTopic,
-    void Function(String)? onSubscriptionToTopicFailed,
-    void Function()? onDisconnectedFromBroker,
   }) {
     mqttServerClient
       ..logging(
@@ -61,6 +63,7 @@ class MqttClient {
       ..keepAlivePeriod = keepAlivePeriod
       ..clientIdentifier = clientId
       ..onBadCertificate = onBadCertificateSupplied
+      ..onConnected = onConnectedToBroker
       ..onSubscribed = onSubscribedToTopic
       ..onSubscribeFail = onSubscriptionToTopicFailed
       ..onDisconnected = onDisconnectedFromBroker;

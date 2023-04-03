@@ -91,6 +91,10 @@ void main() {
 
       bool testOnBadCertificateSupplied(X509Certificate certificate) => false;
 
+      void testOnConnectedToBroker() {
+        return;
+      }
+
       void testOnSubscribedToTopic(
         String topicName,
       ) {
@@ -119,6 +123,7 @@ void main() {
             keepAlivePeriod: testKeepAlivePeriod,
             clientId: testClientId,
             onBadCertificateSupplied: testOnBadCertificateSupplied,
+            onConnectedToBroker: testOnConnectedToBroker,
             onSubscribedToTopic: testOnSubscribedToTopic,
             onSubscriptionToTopicFailed: testOnSubscriptionToTopicFailed,
             onDisconnectedFromBroker: testOnDisconnectedFromBroker,
@@ -141,6 +146,9 @@ void main() {
           verify(
             mockMqttServerClient.onBadCertificate =
                 testOnBadCertificateSupplied,
+          ).called(1);
+          verify(
+            mockMqttServerClient.onConnected = testOnConnectedToBroker,
           ).called(1);
           verify(
             mockMqttServerClient.onSubscribed = testOnSubscribedToTopic,

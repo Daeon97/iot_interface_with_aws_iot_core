@@ -93,28 +93,30 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
       );
   @override
   void ensureAllOtherImportantStuffInitialized({
+    required bool Function(_i2.X509Certificate)? onBadCertificateSupplied,
+    required void Function()? onConnectedToBroker,
+    required void Function(String)? onSubscribedToTopic,
+    required void Function(String)? onSubscriptionToTopicFailed,
+    required void Function()? onDisconnectedFromBroker,
     bool? enableLogging = true,
     int? port = 8883,
     int? keepAlivePeriod = 20,
     String? clientId = r'iot_interface_with_aws_iot_core',
-    bool Function(_i2.X509Certificate)? onBadCertificateSupplied,
-    void Function(String)? onSubscribedToTopic,
-    void Function(String)? onSubscriptionToTopicFailed,
-    void Function()? onDisconnectedFromBroker,
   }) =>
       super.noSuchMethod(
         Invocation.method(
           #ensureAllOtherImportantStuffInitialized,
           [],
           {
+            #onBadCertificateSupplied: onBadCertificateSupplied,
+            #onConnectedToBroker: onConnectedToBroker,
+            #onSubscribedToTopic: onSubscribedToTopic,
+            #onSubscriptionToTopicFailed: onSubscriptionToTopicFailed,
+            #onDisconnectedFromBroker: onDisconnectedFromBroker,
             #enableLogging: enableLogging,
             #port: port,
             #keepAlivePeriod: keepAlivePeriod,
             #clientId: clientId,
-            #onBadCertificateSupplied: onBadCertificateSupplied,
-            #onSubscribedToTopic: onSubscribedToTopic,
-            #onSubscriptionToTopicFailed: onSubscriptionToTopicFailed,
-            #onDisconnectedFromBroker: onDisconnectedFromBroker,
           },
         ),
         returnValueForMissingStub: null,

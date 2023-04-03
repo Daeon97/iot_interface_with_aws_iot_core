@@ -36,6 +36,9 @@ class IotUnityPlatformRemoteDataSourceImplementation
     required String topicName,
   }) {
     late StreamController<IotUnityPlatformModel> streamController;
+    StreamSubscription<
+            List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
+        mqttReceivedMessagesStreamSubscription;
 
     streamController = StreamController<IotUnityPlatformModel>(
       onListen: () async {
@@ -48,148 +51,174 @@ class IotUnityPlatformRemoteDataSourceImplementation
           )
           ..ensureAllOtherImportantStuffInitialized(
             enableLogging: kDebugMode,
-            onBadCertificateSupplied: (X509Certificate certificate) {
-              streamController.sink.addError(
-                BadCertificateException(
-                  message: sprintf(
-                    res.badCertificateExceptionMessage,
-                    [
-                      certificate,
-                    ],
-                  ),
-                ),
-              );
-              return false;
-            },
-            // onSubscribedToTopic: _onSubscribedToTopic,
-            onSubscriptionToTopicFailed: (topicName) {
-              streamController.sink.addError(
-                TopicSubscriptionException(
-                  message: sprintf(
-                    res.topicSubscriptionExceptionMessage,
-                    [
-                      topicName,
-                    ],
-                  ),
-                ),
+            onBadCertificateSupplied: (X509Certificate certificate) =>
+                _onBadCertificateSupplied(
+              certificate,
+              streamController.sink,
+            ),
+            onConnectedToBroker: () => _onConnectedToBroker(
+              topicName,
+            ),
+            onSubscribedToTopic: (_) {
+              mqttReceivedMessagesStreamSubscription = _onSubscribedToTopic(
+                topicName,
+                streamController.sink,
               );
             },
-            onDisconnectedFromBroker: () {
-              streamController.sink.addError(
-                UnsolicitedDisconnectionException(
-                  message: sprintf(
-                    res.unsolicitedDisconnectionExceptionMessage,
-                    const <String>[],
-                  ),
-                ),
-              );
-            },
-          );
-        final connectionStatus = await mqttClient.connectToBroker();
-
-        if (connectionStatus != null &&
-            connectionStatus.state ==
-                mqtt_client.MqttConnectionState.connected) {
-          final subscription = mqttClient.subscribeToTopic(
-            topicName: topicName,
-            qualityOfService: mqtt_client.MqttQos.atMostOnce,
-          );
-
-          if (subscription != null) {
-            final messagesFromBroker = mqttClient.messagesFromBroker;
-
-            if (messagesFromBroker != null) {
-              /*
-                 TODO: Listen to the messagesFromBroker stream here instead of
-                  'awaiting for'. Create a late variable then cancel the
-                  subscription inside onCancel
-               */
-              await for (final message in messagesFromBroker) {
-                for (final mqttReceivedMessage in message) {
-                  if (mqttReceivedMessage.topic == topicName) {
-                    final publishedMessage = mqttReceivedMessage.payload
-                        as mqtt_client.MqttPublishMessage;
-                    final uint8Buffer = publishedMessage.payload.message;
-                    final uint8List = Uint8List.view(
-                      uint8Buffer.buffer,
-                      0,
-                      uint8Buffer.length,
-                    );
-                    final utf8Decoded = utf8.decode(
-                      uint8List,
-                    );
-                    final json =
-                        jsonDecode(utf8Decoded) as Map<String, dynamic>;
-                    streamController.sink.add(
-                      IotUnityPlatformModel.fromJson(
-                        json,
-                      ),
-                    );
-                  } else {
-                    streamController.sink.addError(
-                      MessageTopicMismatchException(
-                        message: sprintf(
-                          res.messageTopicMismatchExceptionMessage,
-                          [
-                            mqttReceivedMessage.payload,
-                            mqttReceivedMessage.topic,
-                            (mqttReceivedMessage.payload
-                                    as mqtt_client.MqttPublishMessage)
-                                .payload
-                                .message,
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-                }
-              }
-            } else {
-              streamController.sink.addError(
-                NoMessagesFromBrokerException(
-                  message: sprintf(
-                    res.noMessagesFromBrokerExceptionMessage,
-                    [
-                      connectionStatus.state.name,
-                      connectionStatus.returnCode?.name,
-                      connectionStatus.disconnectionOrigin.name,
-                    ],
-                  ),
-                ),
-              );
-            }
-          } else {
-            streamController.sink.addError(
-              TopicSubscriptionException(
-                message: sprintf(
-                  res.topicSubscriptionExceptionMessage,
-                  [
-                    topicName,
-                  ],
-                ),
-              ),
-            );
-          }
-        } else {
-          streamController.sink.addError(
-            CouldNotConnectToBrokerException(
-              message: sprintf(
-                res.couldNotConnectToBrokerExceptionMessage,
-                [
-                  connectionStatus?.state.name,
-                  connectionStatus?.returnCode?.name,
-                  connectionStatus?.disconnectionOrigin.name,
-                ],
-              ),
+            onSubscriptionToTopicFailed: (_) => _onSubscriptionToTopicFailed(
+              topicName,
+              streamController.sink,
+            ),
+            onDisconnectedFromBroker: () => _onDisconnectedFromBroker(
+              streamController.sink,
             ),
           );
-        }
+
+        final connectionStatus = await mqttClient.connectToBroker();
+
+        // if (connectionStatus?.state !=
+        //     mqtt_client.MqttConnectionState.connected) {
+        //   streamController.sink.addError(
+        //     CouldNotConnectToBrokerException(
+        //       message: sprintf(
+        //         res.couldNotConnectToBrokerExceptionMessage,
+        //         [
+        //           connectionStatus?.state.name,
+        //           connectionStatus?.returnCode?.name,
+        //           connectionStatus?.disconnectionOrigin.name,
+        //         ],
+        //       ),
+        //     ),
+        //   );
+        // }
       },
       onCancel: () async {
+        await mqttReceivedMessagesStreamSubscription?.cancel();
         await streamController.sink.close();
         await streamController.close();
       },
     );
     return streamController.stream;
+  }
+
+  bool _onBadCertificateSupplied(
+    X509Certificate certificate,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) {
+    streamSink.addError(
+      BadCertificateException(
+        message: sprintf(
+          res.badCertificateExceptionMessage,
+          [
+            certificate,
+          ],
+        ),
+      ),
+    );
+    return false;
+  }
+
+  void _onConnectedToBroker(String topicName) {
+    mqttClient.subscribeToTopic(
+      topicName: topicName,
+      qualityOfService: mqtt_client.MqttQos.atMostOnce,
+    );
+  }
+
+  StreamSubscription<
+          List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
+      _onSubscribedToTopic(
+    String topicName,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) {
+    StreamSubscription<
+            List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
+        mqttReceivedMessagesStreamSubscription;
+    final messagesFromBroker = mqttClient.messagesFromBroker;
+
+    if (messagesFromBroker != null) {
+      mqttReceivedMessagesStreamSubscription = messagesFromBroker.listen(
+        (mqttReceivedMessages) {
+          for (final mqttReceivedMessage in mqttReceivedMessages) {
+            if (mqttReceivedMessage.topic == topicName) {
+              final publishedMessage =
+                  mqttReceivedMessage.payload as mqtt_client.MqttPublishMessage;
+              final uint8Buffer = publishedMessage.payload.message;
+              final uint8List = Uint8List.view(
+                uint8Buffer.buffer,
+                uint8Buffer.length,
+              );
+              final utf8Decoded = utf8.decode(
+                uint8List,
+              );
+              final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
+              streamSink.add(
+                IotUnityPlatformModel.fromJson(
+                  json,
+                ),
+              );
+            } else {
+              streamSink.addError(
+                MessageTopicMismatchException(
+                  message: sprintf(
+                    res.messageTopicMismatchExceptionMessage,
+                    [
+                      mqttReceivedMessage.payload,
+                      mqttReceivedMessage.topic,
+                      (mqttReceivedMessage.payload
+                              as mqtt_client.MqttPublishMessage)
+                          .payload
+                          .message,
+                    ],
+                  ),
+                ),
+              );
+            }
+          }
+        },
+      );
+    } else {
+      streamSink.addError(
+        NoMessagesFromBrokerException(
+          message: sprintf(
+            res.noMessagesFromBrokerExceptionMessage,
+            [
+              messagesFromBroker,
+            ],
+          ),
+        ),
+      );
+    }
+
+    return mqttReceivedMessagesStreamSubscription;
+  }
+
+  void _onSubscriptionToTopicFailed(
+    String topicName,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) {
+    streamSink.addError(
+      TopicSubscriptionException(
+        message: sprintf(
+          res.topicSubscriptionExceptionMessage,
+          [
+            topicName,
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _onDisconnectedFromBroker(
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) {
+    streamSink.addError(
+      UnsolicitedDisconnectionException(
+        message: sprintf(
+          res.unsolicitedDisconnectionExceptionMessage,
+          const <String>[],
+        ),
+      ),
+    );
   }
 }

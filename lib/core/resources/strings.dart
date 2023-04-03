@@ -16,7 +16,7 @@ const defaultClientId = 'iot_interface_with_aws_iot_core';
 
 // exception messages
 const noMessagesFromBrokerExceptionMessage =
-    '''No messages from broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
+    'No messages from broker exception -> %s';
 const badCertificateExceptionMessage =
     'Bad certificate exception. X509Certificate -> %s';
 const topicSubscriptionExceptionMessage =
