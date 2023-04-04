@@ -129,26 +129,8 @@ void main() {
       );
 
       group(
-        'getDataFromIotUnityPlatform onListen',
+        'onListen',
         () {
-          late StreamSubscription<IotUnityPlatformModel> result;
-
-          setUp(
-            () {
-              result = iotUnityPlatformRemoteDataSourceImplementation
-                  .getDataFromIotUnityPlatform(
-                    topicName: testTopicName,
-                  )
-                  .listen((_) {});
-            },
-          );
-
-          tearDown(
-            () {
-              result.cancel();
-            },
-          );
-
           test(
             '''
               should establish a security context first, ensure all other important
@@ -160,6 +142,12 @@ void main() {
               is listened to
             ''',
             () {
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                    topicName: testTopicName,
+                  )
+                  .listen((_) {});
+
               verifyInOrder(
                 [
                   mockMqttClient.establishSecurityContext(
@@ -197,26 +185,127 @@ void main() {
                 ..[0].called(1)
                 ..[1].called(1)
                 ..[2].called(1);
+
+              result.cancel();
             },
           );
 
-          // test(
-          //   '''
-          //     should add a [CouldNotConnectToBrokerException] to the stream sink
-          //     when the connection status gotten as a result of invoking
-          //     [MqttClient.connectToBroker] is [MqttConnectionState.disconnected]
-          //   ''',
-          //   () {
-          //     final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
-          //       ..state = mqtt_client.MqttConnectionState.disconnected;
-          //     when(
-          //       mockMqttClient.connectToBroker(),
-          //     ).thenAnswer(
-          //       (_) async => expectedAnswer,
-          //     );
-          //     expect(result, matcher);
-          //   },
-          // );
+          test(
+            '''
+              should expect a [CouldNotConnectToBrokerException] error when the
+              connection status gotten as a result of invoking
+              [MqttClient.connectToBroker] is [MqttConnectionState.disconnecting]
+            ''',
+            () {
+              final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+                ..state = mqtt_client.MqttConnectionState.disconnecting;
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenAnswer(
+                (_) async => expectedAnswer,
+              );
+
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+
+              expectLater(
+                result,
+                emitsError(
+                  const TypeMatcher<CouldNotConnectToBrokerException>(),
+                ),
+              );
+            },
+          );
+
+          test(
+            '''
+              should expect a [CouldNotConnectToBrokerException] error when the
+              connection status gotten as a result of invoking
+              [MqttClient.connectToBroker] is [MqttConnectionState.disconnected]
+            ''',
+            () {
+              final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+                ..state = mqtt_client.MqttConnectionState.disconnected;
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenAnswer(
+                (_) async => expectedAnswer,
+              );
+
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+
+              expectLater(
+                result,
+                emitsError(
+                  const TypeMatcher<CouldNotConnectToBrokerException>(),
+                ),
+              );
+            },
+          );
+
+          test(
+            '''
+              should expect a [CouldNotConnectToBrokerException] error when the
+              connection status gotten as a result of invoking
+              [MqttClient.connectToBroker] is [MqttConnectionState.faulted]
+            ''',
+            () {
+              final expectedAnswer = mqtt_client.MqttClientConnectionStatus()
+                ..state = mqtt_client.MqttConnectionState.faulted;
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenAnswer(
+                (_) async => expectedAnswer,
+              );
+
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+
+              expectLater(
+                result,
+                emitsError(
+                  const TypeMatcher<CouldNotConnectToBrokerException>(),
+                ),
+              );
+            },
+          );
+
+          test(
+            '''
+              should expect a [CouldNotConnectToBrokerException] error when the
+              connection status gotten as a result of invoking
+              [MqttClient.connectToBroker] is null
+            ''',
+            () {
+              final expectedAnswer = Future.value(
+                null,
+              );
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenAnswer(
+                (_) => expectedAnswer,
+              );
+
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+
+              expectLater(
+                result,
+                emitsError(
+                  const TypeMatcher<CouldNotConnectToBrokerException>(),
+                ),
+              );
+            },
+          );
 
           // group(
           //   'connectToBroker success',
@@ -252,6 +341,28 @@ void main() {
           // );
         },
       );
+
+      // group(
+      //   'onCancel',
+      //   () {
+      //     test(
+      //       '''
+      //       ''',
+      //       () {
+      //         final result = iotUnityPlatformRemoteDataSourceImplementation
+      //             .getDataFromIotUnityPlatform(
+      //           topicName: testTopicName,
+      //         );
+      //         // result.listen((_) {})..cancel();
+      //
+      //         expect(
+      //           result,
+      //           emitsDone,
+      //         );
+      //       },
+      //     );
+      //   },
+      // );
     },
   );
 

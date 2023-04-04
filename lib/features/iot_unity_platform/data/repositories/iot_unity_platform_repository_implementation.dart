@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
     as res;
@@ -44,55 +45,9 @@ class IotUnityPlatformRepositoryImplementation
             );
           },
           onError: (dynamic error) {
-            late final Failure failure;
-
-            if (error is CustomException) {
-              switch (CustomException) {
-                case NoMessagesFromBrokerException:
-                  failure = const NoMessagesFromBrokerFailure(
-                    message: res.noMessagesFromBrokerFailureMessage,
-                  );
-                  break;
-                case BadCertificateException:
-                  failure = const BadCertificateFailure(
-                    message: res.badCertificateFailureMessage,
-                  );
-                  break;
-                case TopicSubscriptionException:
-                  failure = const TopicSubscriptionFailure(
-                    message: res.topicSubscriptionFailureMessage,
-                  );
-                  break;
-                case UnsolicitedDisconnectionException:
-                  failure = const UnsolicitedDisconnectionFailure(
-                    message: res.unsolicitedDisconnectionFailureMessage,
-                  );
-                  break;
-                case CouldNotConnectToBrokerException:
-                  failure = const CouldNotConnectToBrokerFailure(
-                    message: res.couldNotConnectToBrokerFailureMessage,
-                  );
-                  break;
-                case MessageTopicMismatchException:
-                  failure = const MessageTopicMismatchFailure(
-                    message: res.messageTopicMismatchFailureMessage,
-                  );
-                  break;
-                default:
-                  failure = const UnknownFailure(
-                    message: res.unknownFailureMessage,
-                  );
-                  break;
-              }
-            } else {
-              failure = const UnknownFailure(
-                message: res.unknownFailureMessage,
-              );
-            }
-
             streamController.sink.add(
               Left(
-                failure,
+                _computeFailure(error),
               ),
             );
           },
@@ -106,4 +61,59 @@ class IotUnityPlatformRepositoryImplementation
     );
     return streamController.stream;
   }
+
+  Failure _computeFailure(dynamic error) {
+    late final Failure failure;
+
+    if (error is CustomException) {
+      switch (CustomException) {
+        case NoMessagesFromBrokerException:
+          failure = const NoMessagesFromBrokerFailure(
+            message: res.noMessagesFromBrokerFailureMessage,
+          );
+          break;
+        case BadCertificateException:
+          failure = const BadCertificateFailure(
+            message: res.badCertificateFailureMessage,
+          );
+          break;
+        case TopicSubscriptionException:
+          failure = const TopicSubscriptionFailure(
+            message: res.topicSubscriptionFailureMessage,
+          );
+          break;
+        case UnsolicitedDisconnectionException:
+          failure = const UnsolicitedDisconnectionFailure(
+            message: res.unsolicitedDisconnectionFailureMessage,
+          );
+          break;
+        case CouldNotConnectToBrokerException:
+          failure = const CouldNotConnectToBrokerFailure(
+            message: res.couldNotConnectToBrokerFailureMessage,
+          );
+          break;
+        case MessageTopicMismatchException:
+          failure = const MessageTopicMismatchFailure(
+            message: res.messageTopicMismatchFailureMessage,
+          );
+          break;
+        default:
+          failure = const UnknownFailure(
+            message: res.unknownFailureMessage,
+          );
+          break;
+      }
+    } else {
+      failure = const UnknownFailure(
+        message: res.unknownFailureMessage,
+      );
+    }
+
+    return failure;
+  }
+
+  @visibleForTesting
+  Failure computeFailure(dynamic error) => _computeFailure(
+        error,
+      );
 }

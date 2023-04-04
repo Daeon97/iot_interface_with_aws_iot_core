@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kDebugMode;
+import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
@@ -76,21 +76,23 @@ class IotUnityPlatformRemoteDataSourceImplementation
 
         final connectionStatus = await mqttClient.connectToBroker();
 
-        // if (connectionStatus?.state !=
-        //     mqtt_client.MqttConnectionState.connected) {
-        //   streamController.sink.addError(
-        //     CouldNotConnectToBrokerException(
-        //       message: sprintf(
-        //         res.couldNotConnectToBrokerExceptionMessage,
-        //         [
-        //           connectionStatus?.state.name,
-        //           connectionStatus?.returnCode?.name,
-        //           connectionStatus?.disconnectionOrigin.name,
-        //         ],
-        //       ),
-        //     ),
-        //   );
-        // }
+        if (connectionStatus?.state !=
+                mqtt_client.MqttConnectionState.connecting &&
+            connectionStatus?.state !=
+                mqtt_client.MqttConnectionState.connected) {
+          streamController.sink.addError(
+            CouldNotConnectToBrokerException(
+              message: sprintf(
+                res.couldNotConnectToBrokerExceptionMessage,
+                [
+                  connectionStatus?.state.name,
+                  connectionStatus?.returnCode?.name,
+                  connectionStatus?.disconnectionOrigin.name,
+                ],
+              ),
+            ),
+          );
+        }
       },
       onCancel: () async {
         await mqttReceivedMessagesStreamSubscription?.cancel();
@@ -118,12 +120,26 @@ class IotUnityPlatformRemoteDataSourceImplementation
     return false;
   }
 
-  void _onConnectedToBroker(String topicName) {
+  @visibleForTesting
+  bool onBadCertificateSupplied(
+    X509Certificate certificate,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) =>
+      _onBadCertificateSupplied(certificate, streamSink);
+
+  void _onConnectedToBroker(
+    String topicName,
+  ) {
     mqttClient.subscribeToTopic(
       topicName: topicName,
       qualityOfService: mqtt_client.MqttQos.atMostOnce,
     );
   }
+
+  @visibleForTesting
+  void onConnectedToBroker(String topicName) => _onConnectedToBroker(
+        topicName,
+      );
 
   StreamSubscription<
           List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
@@ -193,6 +209,18 @@ class IotUnityPlatformRemoteDataSourceImplementation
     return mqttReceivedMessagesStreamSubscription;
   }
 
+  @visibleForTesting
+  StreamSubscription<
+          List<mqtt_client.MqttReceivedMessage<mqtt_client.MqttMessage>>>?
+      onSubscribedToTopic(
+    String topicName,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) =>
+          _onSubscribedToTopic(
+            topicName,
+            streamSink,
+          );
+
   void _onSubscriptionToTopicFailed(
     String topicName,
     StreamSink<IotUnityPlatformModel> streamSink,
@@ -209,6 +237,16 @@ class IotUnityPlatformRemoteDataSourceImplementation
     );
   }
 
+  @visibleForTesting
+  void onSubscriptionToTopicFailed(
+    String topicName,
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) =>
+      _onSubscriptionToTopicFailed(
+        topicName,
+        streamSink,
+      );
+
   void _onDisconnectedFromBroker(
     StreamSink<IotUnityPlatformModel> streamSink,
   ) {
@@ -221,4 +259,12 @@ class IotUnityPlatformRemoteDataSourceImplementation
       ),
     );
   }
+
+  @visibleForTesting
+  void onDisconnectedFromBroker(
+    StreamSink<IotUnityPlatformModel> streamSink,
+  ) =>
+      _onDisconnectedFromBroker(
+        streamSink,
+      );
 }
