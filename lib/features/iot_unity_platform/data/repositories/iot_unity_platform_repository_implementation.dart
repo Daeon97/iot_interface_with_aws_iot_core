@@ -4,13 +4,13 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
-import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
-    as res;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/repositories.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/failure.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/iot_unity_platform_entity.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/iot_unity_platform_repository.dart';
 
 class IotUnityPlatformRepositoryImplementation
     implements IotUnityPlatformRepository {
@@ -69,43 +69,43 @@ class IotUnityPlatformRepositoryImplementation
       switch (CustomException) {
         case NoMessagesFromBrokerException:
           failure = const NoMessagesFromBrokerFailure(
-            message: res.noMessagesFromBrokerFailureMessage,
+            message: noMessagesFromBrokerFailureMessage,
           );
           break;
         case BadCertificateException:
           failure = const BadCertificateFailure(
-            message: res.badCertificateFailureMessage,
+            message: badCertificateFailureMessage,
           );
           break;
         case TopicSubscriptionException:
           failure = const TopicSubscriptionFailure(
-            message: res.topicSubscriptionFailureMessage,
+            message: topicSubscriptionFailureMessage,
           );
           break;
         case UnsolicitedDisconnectionException:
           failure = const UnsolicitedDisconnectionFailure(
-            message: res.unsolicitedDisconnectionFailureMessage,
+            message: unsolicitedDisconnectionFailureMessage,
           );
           break;
         case CouldNotConnectToBrokerException:
           failure = const CouldNotConnectToBrokerFailure(
-            message: res.couldNotConnectToBrokerFailureMessage,
+            message: couldNotConnectToBrokerFailureMessage,
           );
           break;
         case MessageTopicMismatchException:
           failure = const MessageTopicMismatchFailure(
-            message: res.messageTopicMismatchFailureMessage,
+            message: messageTopicMismatchFailureMessage,
           );
           break;
         default:
           failure = const UnknownFailure(
-            message: res.unknownFailureMessage,
+            message: unknownFailureMessage,
           );
           break;
       }
     } else {
       failure = const UnknownFailure(
-        message: res.unknownFailureMessage,
+        message: unknownFailureMessage,
       );
     }
 

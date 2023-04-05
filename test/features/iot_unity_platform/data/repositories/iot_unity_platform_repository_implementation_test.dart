@@ -1,9 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/repositories/repositories.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/repositories/iot_unity_platform_repository_implementation.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 

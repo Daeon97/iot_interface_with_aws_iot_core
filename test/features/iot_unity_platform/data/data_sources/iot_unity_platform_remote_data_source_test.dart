@@ -1,21 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
-import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
-    as res;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';
+import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
-import 'package:sprintf/sprintf.dart';
-import 'package:typed_data/typed_data.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 import 'iot_unity_platform_remote_data_source_test.mocks.dart';

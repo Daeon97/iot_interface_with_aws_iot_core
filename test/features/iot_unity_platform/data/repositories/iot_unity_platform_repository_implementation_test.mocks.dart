@@ -7,7 +7,7 @@ import 'dart:async' as _i3;
 
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart'
     as _i2;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart'
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart'
     as _i4;
 import 'package:mockito/mockito.dart' as _i1;
 

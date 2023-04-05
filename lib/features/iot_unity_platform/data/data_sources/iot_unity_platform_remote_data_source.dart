@@ -7,11 +7,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kDebugMode, visibleForTesting;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
-import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
-    as res;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';
+import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
 import 'package:sprintf/sprintf.dart';
 
@@ -44,10 +43,9 @@ class IotUnityPlatformRemoteDataSourceImplementation
       onListen: () async {
         mqttClient
           ..establishSecurityContext(
-            rootCertificateAuthority:
-                dotenv.get(res.rootCertificateAuthorityKey),
-            privateKey: dotenv.get(res.privateKeyKey),
-            deviceCertificate: dotenv.get(res.deviceCertificateKey),
+            rootCertificateAuthority: dotenv.get(rootCertificateAuthorityKey),
+            privateKey: dotenv.get(privateKeyKey),
+            deviceCertificate: dotenv.get(deviceCertificateKey),
           )
           ..ensureAllOtherImportantStuffInitialized(
             enableLogging: kDebugMode,
@@ -83,7 +81,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
           streamController.sink.addError(
             CouldNotConnectToBrokerException(
               message: sprintf(
-                res.couldNotConnectToBrokerExceptionMessage,
+                couldNotConnectToBrokerExceptionMessage,
                 [
                   connectionStatus?.state.name,
                   connectionStatus?.returnCode?.name,
@@ -110,7 +108,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
     streamSink.addError(
       BadCertificateException(
         message: sprintf(
-          res.badCertificateExceptionMessage,
+          badCertificateExceptionMessage,
           [
             certificate,
           ],
@@ -177,7 +175,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
               streamSink.addError(
                 MessageTopicMismatchException(
                   message: sprintf(
-                    res.messageTopicMismatchExceptionMessage,
+                    messageTopicMismatchExceptionMessage,
                     [
                       mqttReceivedMessage.payload,
                       mqttReceivedMessage.topic,
@@ -197,7 +195,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
       streamSink.addError(
         NoMessagesFromBrokerException(
           message: sprintf(
-            res.noMessagesFromBrokerExceptionMessage,
+            noMessagesFromBrokerExceptionMessage,
             [
               messagesFromBroker,
             ],
@@ -228,7 +226,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
     streamSink.addError(
       TopicSubscriptionException(
         message: sprintf(
-          res.topicSubscriptionExceptionMessage,
+          topicSubscriptionExceptionMessage,
           [
             topicName,
           ],
@@ -253,7 +251,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
     streamSink.addError(
       UnsolicitedDisconnectionException(
         message: sprintf(
-          res.unsolicitedDisconnectionExceptionMessage,
+          unsolicitedDisconnectionExceptionMessage,
           const <String>[],
         ),
       ),

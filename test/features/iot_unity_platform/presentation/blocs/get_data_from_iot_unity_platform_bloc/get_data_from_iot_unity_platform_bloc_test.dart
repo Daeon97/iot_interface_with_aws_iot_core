@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/usecases.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/blocs/blocs.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/get_data_from_iot_unity_platform_use_case.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/blocs/get_data_from_iot_unity_platform_bloc/get_data_from_iot_unity_platform_bloc.dart';
 import 'package:mockito/annotations.dart';
 
 import 'get_data_from_iot_unity_platform_bloc_test.mocks.dart';
@@ -23,11 +23,20 @@ void main() {
     },
   );
 
-  // test(
-  //   '''
-  //     should ensure that [GettingDataFromIotUnityPlatformState]
-  //     is emitted as initial state
-  //     ''',
-  //   () {},
-  // );
+  tearDown(() {
+    getDataFromIotUnityPlatformBloc.close();
+  });
+
+  test(
+    '''
+      should ensure that [GettingDataFromIotUnityPlatformState]
+      is emitted as initial state
+      ''',
+    () {
+      expect(
+        getDataFromIotUnityPlatformBloc.state,
+        const GettingDataFromIotUnityPlatformState(),
+      );
+    },
+  );
 }

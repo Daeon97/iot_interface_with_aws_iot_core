@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';
-import 'package:iot_interface_with_aws_iot_core/core/usecases/usecases.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/repositories.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/usecases.dart';
+import 'package:iot_interface_with_aws_iot_core/core/errors/failure.dart';
+import 'package:iot_interface_with_aws_iot_core/core/usecases/usecase.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/iot_unity_platform_entity.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/iot_unity_platform_repository.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/get_data_from_iot_unity_platform_use_case.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 

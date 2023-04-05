@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:iot_interface_with_aws_iot_core/core/clients/clients.dart';
+import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;

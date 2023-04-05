@@ -6,8 +6,9 @@
 import 'dart:async' as _i3;
 
 import 'package:dartz/dartz.dart' as _i4;
-import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart' as _i5;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart'
+import 'package:iot_interface_with_aws_iot_core/core/errors/failure.dart'
+    as _i5;
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/iot_unity_platform_entity.dart'
     as _i6;
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/iot_unity_platform_repository.dart'
     as _i2;

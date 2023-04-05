@@ -3,9 +3,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
-    as res;
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/usecases.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/usecases/get_data_from_iot_unity_platform_use_case.dart';
 
 part 'get_data_from_iot_unity_platform_event.dart';
 

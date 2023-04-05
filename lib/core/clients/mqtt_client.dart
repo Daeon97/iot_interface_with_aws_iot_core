@@ -3,8 +3,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'
-    as res;
+import 'package:iot_interface_with_aws_iot_core/core/resources/numbers.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
 import 'package:mqtt_client/mqtt_server_client.dart' as mqtt_server_client;
 
@@ -51,9 +51,9 @@ class MqttClient {
     required void Function(String) onSubscriptionToTopicFailed,
     required void Function() onDisconnectedFromBroker,
     bool enableLogging = true,
-    int port = res.defaultMqttPort,
-    int keepAlivePeriod = res.defaultKeepAlivePeriod,
-    String clientId = res.defaultClientId,
+    int port = defaultMqttPort,
+    int keepAlivePeriod = defaultKeepAlivePeriod,
+    String clientId = defaultClientId,
   }) {
     mqttServerClient
       ..logging(
