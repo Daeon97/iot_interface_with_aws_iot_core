@@ -14,6 +14,10 @@ const rootCertificateAuthorityKey = 'ROOT_CERTIFICATE_AUTHORITY';
 // ID's
 const defaultClientId = 'iot_interface_with_aws_iot_core';
 
+// Get it registration instance names
+const mqttServer = 'mqttServer';
+const mqttClientIdentifier = 'mqttClientIdentifier';
+
 // exception messages
 const noMessagesFromBrokerExceptionMessage =
     'No messages from broker exception -> %s';
@@ -39,3 +43,6 @@ const couldNotConnectToBrokerFailureMessage = 'Unable to connect to broker';
 const messageTopicMismatchFailureMessage =
     'Received message topic does not correspond to current topic';
 const unknownFailureMessage = 'An unknown error occurred';
+
+// empty strings and special characters and other strings
+const emptyString = '';
