@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs
 
-import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/numbers.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
@@ -17,26 +17,32 @@ class MqttClient {
   final SecurityContext securityContext;
   final mqtt_server_client.MqttServerClient mqttServerClient;
 
-  void establishSecurityContext({
-    required String rootCertificateAuthority,
-    required String privateKey,
-    required String deviceCertificate,
-  }) {
+  Future<void> establishSecurityContext({
+    required String rootCertificateAuthorityAssetPath,
+    required String privateKeyAssetPath,
+    required String deviceCertificateAssetPath,
+  }) async {
     securityContext
       ..setClientAuthoritiesBytes(
-        utf8.encode(
-          rootCertificateAuthority,
-        ),
+        (await rootBundle.load(
+          rootCertificateAuthorityAssetPath,
+        ))
+            .buffer
+            .asUint8List(),
       )
       ..useCertificateChainBytes(
-        utf8.encode(
-          deviceCertificate,
-        ),
+        (await rootBundle.load(
+          deviceCertificateAssetPath,
+        ))
+            .buffer
+            .asUint8List(),
       )
       ..usePrivateKeyBytes(
-        utf8.encode(
-          privateKey,
-        ),
+        (await rootBundle.load(
+          privateKeyAssetPath,
+        ))
+            .buffer
+            .asUint8List(),
       );
     mqttServerClient
       ..securityContext = securityContext
@@ -62,7 +68,7 @@ class MqttClient {
       ..port = port
       ..keepAlivePeriod = keepAlivePeriod
       ..clientIdentifier = clientId
-      ..onBadCertificate = onBadCertificateSupplied
+      // ..onBadCertificate = onBadCertificateSupplied
       ..onConnected = onConnectedToBroker
       ..onSubscribed = onSubscribedToTopic
       ..onSubscribeFail = onSubscriptionToTopicFailed

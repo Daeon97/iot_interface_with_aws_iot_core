@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';
 import 'package:mockito/annotations.dart';
@@ -36,9 +37,10 @@ void main() {
   const testTopicName = 'test/topic/name';
   const testTopic1 = 'test/topic/1';
   const testQualityOfService = mqtt_client.MqttQos.atMostOnce;
-  const testRootCertificateAuthoritykey = 'ROOT_CERTIFICATE_AUTHORITY';
-  const testPrivateKeyKey = 'PRIVATE_KEY';
-  const testDeviceCertificateKey = 'DEVICE_CERTIFICATE';
+  const testRootCertificateAuthorityAssetPath =
+      rootCertificateAuthorityAssetPath;
+  const testPrivateKeyAssetPath = privateKeyAssetPath;
+  const testDeviceCertificateAssetPath = deviceCertificateAssetPath;
   const testEnableLogging = kDebugMode;
 
   const testIotUnityPlatformModel = IotUnityPlatformModel(
@@ -135,20 +137,29 @@ void main() {
               [IotUnityPlatformRemoteDataSourceImplementation.getDataFromIotUnityPlatform]
               is listened to
             ''',
-            () {
+            () async {
               final result = iotUnityPlatformRemoteDataSourceImplementation
                   .getDataFromIotUnityPlatform(
                     topicName: testTopicName,
                   )
                   .listen((_) {});
 
+              await untilCalled(
+                mockMqttClient.establishSecurityContext(
+                  rootCertificateAuthorityAssetPath:
+                      testRootCertificateAuthorityAssetPath,
+                  privateKeyAssetPath: testPrivateKeyAssetPath,
+                  deviceCertificateAssetPath: testDeviceCertificateAssetPath,
+                ),
+              );
+
               verifyInOrder(
                 [
                   mockMqttClient.establishSecurityContext(
-                    rootCertificateAuthority:
-                        dotenv.get(testRootCertificateAuthoritykey),
-                    privateKey: dotenv.get(testPrivateKeyKey),
-                    deviceCertificate: dotenv.get(testDeviceCertificateKey),
+                    rootCertificateAuthorityAssetPath:
+                        testRootCertificateAuthorityAssetPath,
+                    privateKeyAssetPath: testPrivateKeyAssetPath,
+                    deviceCertificateAssetPath: testDeviceCertificateAssetPath,
                   ),
                   mockMqttClient.ensureAllOtherImportantStuffInitialized(
                     enableLogging: testEnableLogging,
@@ -180,7 +191,7 @@ void main() {
                 ..[1].called(1)
                 ..[2].called(1);
 
-              result.cancel();
+              await result.cancel();
             },
           );
 

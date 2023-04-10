@@ -17,7 +17,7 @@ dependencies:
   equatable: ^2.0.5
   dartz: ^0.10.1
   hydrated_bloc: ^9.1.0
-  mqtt_client: ^9.7.4
+  mqtt_client: ^9.8.1
   dio: ^5.0.0
   flutter_dotenv: ^5.0.2
   sprintf: ^7.0.0
@@ -38,4 +38,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/certificates/
     - .env

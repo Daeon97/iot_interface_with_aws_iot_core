@@ -20,7 +20,7 @@ class App extends StatelessWidget {
 
   List<BlocProvider> get _blocProviders => [
         BlocProvider<IotUnityPlatformBloc>(
-          create: sl(),
+          create: (_) => sl(),
         ),
       ];
 }

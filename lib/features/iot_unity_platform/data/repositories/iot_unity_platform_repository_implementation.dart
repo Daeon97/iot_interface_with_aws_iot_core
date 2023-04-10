@@ -97,6 +97,11 @@ class IotUnityPlatformRepositoryImplementation
             message: messageTopicMismatchFailureMessage,
           );
           break;
+        case BadMessageFormatException:
+          failure = const BadMessageFormatFailure(
+            message: badMessageFormatFailureMessage,
+          );
+          break;
         default:
           failure = const UnknownFailure(
             message: unknownFailureMessage,

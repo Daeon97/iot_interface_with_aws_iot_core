@@ -43,3 +43,9 @@ class MessageTopicMismatchException extends CustomException {
     required super.message,
   });
 }
+
+class BadMessageFormatException extends CustomException {
+  const BadMessageFormatException({
+    required super.message,
+  });
+}

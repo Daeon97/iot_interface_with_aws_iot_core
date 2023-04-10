@@ -74,23 +74,25 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
         ),
       ) as _i3.MqttServerClient);
   @override
-  void establishSecurityContext({
-    required String? rootCertificateAuthority,
-    required String? privateKey,
-    required String? deviceCertificate,
+  _i5.Future<void> establishSecurityContext({
+    required String? rootCertificateAuthorityAssetPath,
+    required String? privateKeyAssetPath,
+    required String? deviceCertificateAssetPath,
   }) =>
-      super.noSuchMethod(
+      (super.noSuchMethod(
         Invocation.method(
           #establishSecurityContext,
           [],
           {
-            #rootCertificateAuthority: rootCertificateAuthority,
-            #privateKey: privateKey,
-            #deviceCertificate: deviceCertificate,
+            #rootCertificateAuthorityAssetPath:
+                rootCertificateAuthorityAssetPath,
+            #privateKeyAssetPath: privateKeyAssetPath,
+            #deviceCertificateAssetPath: deviceCertificateAssetPath,
           },
         ),
-        returnValueForMissingStub: null,
-      );
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
   @override
   void ensureAllOtherImportantStuffInitialized({
     required bool Function(_i2.X509Certificate)? onBadCertificateSupplied,

@@ -41,36 +41,35 @@ class IotUnityPlatformRemoteDataSourceImplementation
 
     streamController = StreamController<IotUnityPlatformModel>(
       onListen: () async {
-        mqttClient
-          ..establishSecurityContext(
-            rootCertificateAuthority: dotenv.get(rootCertificateAuthorityKey),
-            privateKey: dotenv.get(privateKeyKey),
-            deviceCertificate: dotenv.get(deviceCertificateKey),
-          )
-          ..ensureAllOtherImportantStuffInitialized(
-            enableLogging: kDebugMode,
-            onBadCertificateSupplied: (X509Certificate certificate) =>
-                _onBadCertificateSupplied(
-              certificate,
-              streamController.sink,
-            ),
-            onConnectedToBroker: () => _onConnectedToBroker(
-              topicName,
-            ),
-            onSubscribedToTopic: (_) {
-              mqttReceivedMessagesStreamSubscription = _onSubscribedToTopic(
-                topicName,
-                streamController.sink,
-              );
-            },
-            onSubscriptionToTopicFailed: (_) => _onSubscriptionToTopicFailed(
+        await mqttClient.establishSecurityContext(
+          rootCertificateAuthorityAssetPath: rootCertificateAuthorityAssetPath,
+          privateKeyAssetPath: privateKeyAssetPath,
+          deviceCertificateAssetPath: deviceCertificateAssetPath,
+        );
+        mqttClient.ensureAllOtherImportantStuffInitialized(
+          enableLogging: kDebugMode,
+          onBadCertificateSupplied: (X509Certificate certificate) =>
+              _onBadCertificateSupplied(
+            certificate,
+            streamController.sink,
+          ),
+          onConnectedToBroker: () => _onConnectedToBroker(
+            topicName,
+          ),
+          onSubscribedToTopic: (_) {
+            mqttReceivedMessagesStreamSubscription = _onSubscribedToTopic(
               topicName,
               streamController.sink,
-            ),
-            onDisconnectedFromBroker: () => _onDisconnectedFromBroker(
-              streamController.sink,
-            ),
-          );
+            );
+          },
+          onSubscriptionToTopicFailed: (_) => _onSubscriptionToTopicFailed(
+            topicName,
+            streamController.sink,
+          ),
+          onDisconnectedFromBroker: () => _onDisconnectedFromBroker(
+            streamController.sink,
+          ),
+        );
 
         final connectionStatus = await mqttClient.connectToBroker();
 
@@ -155,22 +154,32 @@ class IotUnityPlatformRemoteDataSourceImplementation
         (mqttReceivedMessages) {
           for (final mqttReceivedMessage in mqttReceivedMessages) {
             if (mqttReceivedMessage.topic == topicName) {
-              final publishedMessage =
-                  mqttReceivedMessage.payload as mqtt_client.MqttPublishMessage;
-              final uint8Buffer = publishedMessage.payload.message;
-              final uint8List = Uint8List.view(
-                uint8Buffer.buffer,
-                uint8Buffer.length,
-              );
-              final utf8Decoded = utf8.decode(
-                uint8List,
-              );
-              final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
-              streamSink.add(
-                IotUnityPlatformModel.fromJson(
-                  json,
-                ),
-              );
+              try {
+                final publishedMessage = mqttReceivedMessage.payload
+                    as mqtt_client.MqttPublishMessage;
+                final uint8Buffer = publishedMessage.payload.message;
+                final uint8List = Uint8List.view(
+                  uint8Buffer.buffer,
+                );
+                final utf8Decoded = utf8.decode(
+                  uint8List,
+                );
+                final json = jsonDecode(utf8Decoded) as Map<String, dynamic>;
+                streamSink.add(
+                  IotUnityPlatformModel.fromJson(
+                    json,
+                  ),
+                );
+              } catch (_) {
+                streamSink.addError(
+                  BadMessageFormatException(
+                    message: sprintf(
+                      badMessageFormatExceptionMessage,
+                      [],
+                    ),
+                  ),
+                );
+              }
             } else {
               streamSink.addError(
                 MessageTopicMismatchException(

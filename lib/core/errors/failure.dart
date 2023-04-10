@@ -44,6 +44,12 @@ class MessageTopicMismatchFailure extends Failure {
   });
 }
 
+class BadMessageFormatFailure extends Failure {
+  const BadMessageFormatFailure({
+    required super.message,
+  });
+}
+
 class UnknownFailure extends Failure {
   const UnknownFailure({
     required super.message,

@@ -17,6 +17,11 @@ jobs:
           channel: 'stable'
           cache: true
 
+#      # Create certificates
+#      - name: Create certificates
+#        run: |
+#          touch
+
       # Create .env file
       - name: Create .env file
         run: |

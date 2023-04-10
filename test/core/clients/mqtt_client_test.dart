@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
@@ -21,6 +23,7 @@ void main() {
 
   setUp(
     () {
+      TestWidgetsFlutterBinding.ensureInitialized();
       mockSecurityContext = MockSecurityContext();
       mockMqttServerClient = MockMqttServerClient();
       mqttClient = MqttClient(
@@ -30,9 +33,10 @@ void main() {
     },
   );
 
-  const testRootCertificateAuthority = 'test root certificate authority';
-  const testPrivateKey = 'test private key';
-  const testDeviceCertificate = 'test device certificate';
+  const testRootCertificateAuthorityAssetPath =
+      rootCertificateAuthorityAssetPath;
+  const testPrivateKeyAssetPath = privateKeyAssetPath;
+  const testDeviceCertificateAssetPath = deviceCertificateAssetPath;
 
   group(
     'Security Context',
@@ -42,32 +46,33 @@ void main() {
         should establish a security context when
         [MqttClient.establishSecurityContext] is called
       ''',
-        () {
-          mqttClient.establishSecurityContext(
-            rootCertificateAuthority: testRootCertificateAuthority,
-            privateKey: testPrivateKey,
-            deviceCertificate: testDeviceCertificate,
+        () async {
+          await mqttClient.establishSecurityContext(
+            rootCertificateAuthorityAssetPath:
+                testRootCertificateAuthorityAssetPath,
+            privateKeyAssetPath: testPrivateKeyAssetPath,
+            deviceCertificateAssetPath: testDeviceCertificateAssetPath,
           );
 
           verify(
             mockSecurityContext.setClientAuthoritiesBytes(
-              utf8.encode(
-                testRootCertificateAuthority,
-              ),
+              (await rootBundle.load(testRootCertificateAuthorityAssetPath))
+                  .buffer
+                  .asUint8List(),
             ),
           ).called(1);
           verify(
             mockSecurityContext.useCertificateChainBytes(
-              utf8.encode(
-                testDeviceCertificate,
-              ),
+              (await rootBundle.load(testDeviceCertificateAssetPath))
+                  .buffer
+                  .asUint8List(),
             ),
           ).called(1);
           verify(
             mockSecurityContext.usePrivateKeyBytes(
-              utf8.encode(
-                testPrivateKey,
-              ),
+              (await rootBundle.load(testPrivateKeyAssetPath))
+                  .buffer
+                  .asUint8List(),
             ),
           ).called(1);
           verify(
