@@ -11,9 +11,11 @@ const assetsPath = 'assets';
 const certificatesPath = '$assetsPath/certificates';
 
 // certificates
-const deviceCertificateAssetPath = '$certificatesPath/device_certificate.pem.crt';
+const deviceCertificateAssetPath =
+    '$certificatesPath/device_certificate.pem.crt';
 const privateKeyAssetPath = '$certificatesPath/private_key.pem.key';
-const rootCertificateAuthorityAssetPath = '$certificatesPath/root_certificate_authority.pem';
+const rootCertificateAuthorityAssetPath =
+    '$certificatesPath/root_certificate_authority.pem';
 
 // environment variable key names
 const iotUnityPlatformTopicNameKey = 'IOT_UNITY_PLATFORM_TOPIC_NAME';
@@ -54,5 +56,16 @@ const messageTopicMismatchFailureMessage =
 const badMessageFormatFailureMessage = '''...''';
 const unknownFailureMessage = 'An unknown error occurred';
 
-// empty strings and special characters and other strings
+// empty strings and special characters
 const emptyString = '';
+const whiteSpace = '';
+const tabSpace = '    ';
+const threeDots = '...';
+const degreeFahrenheit = '℉';
+const degreeCelcius = '℃';
+const degree = '°';
+
+// other literals for IoT Unity Platform
+const iotUnityPlatformNameLiteral = 'IoT Unity Platform';
+const iotUnityPlatformHumidityLiteral = 'Humidity';
+const iotUnityPlatformTemperatureLiteral = 'Temperature';

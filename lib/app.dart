@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/blocs/iot_unity_platform_bloc/iot_unity_platform_bloc.dart';
-import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/screens/home_screen.dart';
+import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/screens/iot_unity_platform_home_screen.dart';
 import 'package:iot_interface_with_aws_iot_core/injection_container.dart';
 
 class App extends StatelessWidget {
@@ -30,7 +30,7 @@ Route<String> _routes(RouteSettings settings) => MaterialPageRoute(
         switch (settings.name) {
           case homeScreenRoute:
           default:
-            return const HomeScreen();
+            return const IotUnityPlatformHomeScreen();
         }
       },
     );
