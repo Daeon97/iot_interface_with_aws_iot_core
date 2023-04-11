@@ -17,6 +17,10 @@ const veryVeryLargeSpacingDouble = 128.0;
 // other doubles
 const nilDotNineDouble = 0.9;
 const threeSixtyDouble = 360.0;
+const twentyEightDouble = 28.0;
+const fiftySixDouble = 56.0;
+const eightyFourDouble = 84.0;
+const hundredTwelveDouble = 112.0;
 
 // ints
 const nilInt = 0;
