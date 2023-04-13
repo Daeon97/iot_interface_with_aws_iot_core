@@ -2,39 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/numbers.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
+import 'package:iot_interface_with_aws_iot_core/core/utils/extensions.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/blocs/iot_unity_platform_bloc/iot_unity_platform_bloc.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/presentation/widgets/iot_unity_platform_appropriate_temperature_icon_widget.dart';
 
-class IotUnityPlatformTemperatureWidget extends StatefulWidget {
+class IotUnityPlatformTemperatureWidget extends StatelessWidget {
   const IotUnityPlatformTemperatureWidget({
     super.key,
   });
-
-  @override
-  State<IotUnityPlatformTemperatureWidget> createState() =>
-      _IotUnityPlatformTemperatureWidgetState();
-}
-
-class _IotUnityPlatformTemperatureWidgetState
-    extends State<IotUnityPlatformTemperatureWidget> {
-  @override
-  void initState() {
-    // BlocProvider.of<IotUnityPlatformBloc>(context).add(
-    //   const ListenDataFromIotUnityPlatformEvent(),
-    // );
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    // BlocProvider.of<IotUnityPlatformBloc>(context).add(
-    //   const StopListeningDataFromIotUnityPlatformEvent(),
-    // );
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) => Container(
@@ -85,7 +62,7 @@ class _IotUnityPlatformTemperatureWidgetState
                           child: Text(
                             iotUnityPlatformState
                                     is GotDataFromIotUnityPlatformState
-                                ? '${iotUnityPlatformState.iotUnityPlatformEntity.temperature}'
+                                ? '${iotUnityPlatformState.iotUnityPlatformEntity.temperature.makePresentable}'
                                 : '$nilDouble',
                             style: TextStyle(
                               color: iotUnityPlatformState
@@ -99,7 +76,6 @@ class _IotUnityPlatformTemperatureWidgetState
                         ),
                         const TextSpan(
                           text: whiteSpace + whiteSpace,
-                          style: TextStyle(),
                         ),
                         TextSpan(
                           text: degreeCelcius,
@@ -122,7 +98,6 @@ class _IotUnityPlatformTemperatureWidgetState
                     iotUnityPlatformTemperatureLiteral,
                     style: TextStyle(
                       color: Colors.black,
-                      // fontSize: largeSpacing,
                       fontWeight: FontWeight.w400,
                     ),
                   ),

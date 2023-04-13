@@ -8,11 +8,8 @@ import 'package:simple_circular_progress_bar/simple_circular_progress_bar.dart';
 
 class IotUnityPlatformSurroundingProgressBarWidget extends StatefulWidget {
   const IotUnityPlatformSurroundingProgressBarWidget({
-    required this.temperatureNotifier,
     super.key,
   });
-
-  final ValueNotifier<double> temperatureNotifier;
 
   @override
   State<IotUnityPlatformSurroundingProgressBarWidget> createState() =>
@@ -21,18 +18,21 @@ class IotUnityPlatformSurroundingProgressBarWidget extends StatefulWidget {
 
 class _IotUnityPlatformSurroundingProgressBarWidgetState
     extends State<IotUnityPlatformSurroundingProgressBarWidget> {
+  final _temperatureNotifier = ValueNotifier<double>(
+    nilDouble,
+  );
+
   @override
   void dispose() {
-    widget.temperatureNotifier.dispose();
+    _temperatureNotifier.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) =>
-      BlocListener<IotUnityPlatformBloc, IotUnityPlatformState>(
+  Widget build(_) => BlocListener<IotUnityPlatformBloc, IotUnityPlatformState>(
         listener: (_, iotUnityPlatformState) {
           if (iotUnityPlatformState is GotDataFromIotUnityPlatformState) {
-            widget.temperatureNotifier.value =
+            _temperatureNotifier.value =
                 iotUnityPlatformState.iotUnityPlatformEntity.temperature;
           }
         },
@@ -47,7 +47,7 @@ class _IotUnityPlatformSurroundingProgressBarWidgetState
           startAngle: veryVeryLargeSpacingDouble +
               veryVeryLargeSpacingDouble +
               (spacingDouble - tinySpacingDouble),
-          valueNotifier: widget.temperatureNotifier,
+          valueNotifier: _temperatureNotifier,
           progressColors: const [
             Colors.lightBlueAccent,
             Colors.greenAccent,

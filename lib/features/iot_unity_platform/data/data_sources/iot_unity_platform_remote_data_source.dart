@@ -71,20 +71,35 @@ class IotUnityPlatformRemoteDataSourceImplementation
           ),
         );
 
-        final connectionStatus = await mqttClient.connectToBroker();
+        try {
+          final connectionStatus = await mqttClient.connectToBroker();
 
-        if (connectionStatus?.state !=
-                mqtt_client.MqttConnectionState.connecting &&
-            connectionStatus?.state !=
-                mqtt_client.MqttConnectionState.connected) {
+          if (connectionStatus?.state !=
+                  mqtt_client.MqttConnectionState.connecting &&
+              connectionStatus?.state !=
+                  mqtt_client.MqttConnectionState.connected) {
+            streamController.sink.addError(
+              CouldNotConnectToBrokerException(
+                message: sprintf(
+                  couldNotConnectToBrokerExceptionMessage,
+                  [
+                    connectionStatus?.state.name,
+                    connectionStatus?.returnCode?.name,
+                    connectionStatus?.disconnectionOrigin.name,
+                  ],
+                ),
+              ),
+            );
+          }
+        } catch (_) {
           streamController.sink.addError(
             CouldNotConnectToBrokerException(
               message: sprintf(
                 couldNotConnectToBrokerExceptionMessage,
                 [
-                  connectionStatus?.state.name,
-                  connectionStatus?.returnCode?.name,
-                  connectionStatus?.disconnectionOrigin.name,
+                  null,
+                  null,
+                  null,
                 ],
               ),
             ),

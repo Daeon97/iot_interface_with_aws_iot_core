@@ -36,7 +36,7 @@ const badCertificateExceptionMessage =
 const topicSubscriptionExceptionMessage =
     'Topic subscription exception. Topic name -> %s';
 const unsolicitedDisconnectionExceptionMessage =
-    'Unsolicited disconnection exception -> %s';
+    'Unsolicited disconnection exception';
 const couldNotConnectToBrokerExceptionMessage =
     '''Could not connect to broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
 const messageTopicMismatchExceptionMessage =
@@ -64,8 +64,10 @@ const threeDots = '...';
 const degreeFahrenheit = '℉';
 const degreeCelcius = '℃';
 const degree = '°';
+const humidityUnit = 'g.m-3';
 
 // other literals for IoT Unity Platform
 const iotUnityPlatformNameLiteral = 'IoT Unity Platform';
 const iotUnityPlatformHumidityLiteral = 'Humidity';
 const iotUnityPlatformTemperatureLiteral = 'Temperature';
+const iotUnityPlatformLoadingDataLiteral = 'Loading...';

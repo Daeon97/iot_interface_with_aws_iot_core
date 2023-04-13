@@ -63,7 +63,7 @@ class IotUnityPlatformRepositoryImplementation
   }
 
   Failure _computeFailure(dynamic error) {
-    late final Failure failure;
+    late Failure failure;
 
     if (error is CustomException) {
       switch (CustomException) {
