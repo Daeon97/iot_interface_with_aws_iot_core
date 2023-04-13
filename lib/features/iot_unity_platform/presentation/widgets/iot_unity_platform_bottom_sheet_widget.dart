@@ -15,7 +15,7 @@ class IotUnityPlatformBottomSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<IotUnityPlatformBloc, IotUnityPlatformState>(
-        builder: (_, iotUnityPlatformState) =>
+        builder: (iotUnityPlatformContext, iotUnityPlatformState) =>
             iotUnityPlatformState is GettingDataFromIotUnityPlatformState ||
                     iotUnityPlatformState
                         is FailedToGetDataFromIotUnityPlatformState
@@ -23,6 +23,11 @@ class IotUnityPlatformBottomSheetWidget extends StatelessWidget {
                     enableDrag: false,
                     onClosing: () {},
                     builder: (_) => Container(
+                      margin: const EdgeInsets.only(
+                        left: spacingDouble,
+                        right: spacingDouble,
+                        bottom: spacingDouble,
+                      ),
                       padding: const EdgeInsets.symmetric(
                         vertical: spacingDouble,
                         horizontal: largeSpacingDouble,
@@ -33,9 +38,9 @@ class IotUnityPlatformBottomSheetWidget extends StatelessWidget {
                                 is GettingDataFromIotUnityPlatformState
                             ? Colors.blue
                             : Colors.red,
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(
-                            largeSpacingDouble,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(
+                            smallSpacingDouble,
                           ),
                         ),
                       ),
@@ -58,7 +63,26 @@ class IotUnityPlatformBottomSheetWidget extends StatelessWidget {
                                     iotUnityPlatformState.message,
                                     style: const TextStyle(
                                       color: Colors.white,
-                                      // fontSize: largeSpacing,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => iotUnityPlatformContext
+                                      .read<IotUnityPlatformBloc>()
+                                      .add(
+                                        const ListenDataFromIotUnityPlatformEvent(),
+                                      ),
+                                  style: const ButtonStyle(
+                                    backgroundColor:
+                                        MaterialStatePropertyAll<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    iotUnityPlatformRetryLiteral,
+                                    style: TextStyle(
+                                      color: Colors.blue,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -83,7 +107,6 @@ class IotUnityPlatformBottomSheetWidget extends StatelessWidget {
                                     iotUnityPlatformLoadingDataLiteral,
                                     style: TextStyle(
                                       color: Colors.white,
-                                      // fontSize: largeSpacing,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

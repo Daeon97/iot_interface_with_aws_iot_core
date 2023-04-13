@@ -26,10 +26,11 @@ class IotUnityPlatformBloc
         getDataFromIotUnityPlatformUseCaseStreamSubscription;
 
     on<ListenDataFromIotUnityPlatformEvent>(
-      (event, emit) {
+      (event, emit) async {
         emit(
           const GettingDataFromIotUnityPlatformState(),
         );
+        await getDataFromIotUnityPlatformUseCaseStreamSubscription?.cancel();
         getDataFromIotUnityPlatformUseCaseStreamSubscription =
             getDataFromIotUnityPlatformUseCase(
           topicName: dotenv.env[iotUnityPlatformTopicNameKey]!,

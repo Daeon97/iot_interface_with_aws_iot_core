@@ -23,6 +23,10 @@ const fiftySixDouble = 56.0;
 const eightyFourDouble = 84.0;
 const hundredTwelveDouble = 112.0;
 const oneEightyDouble = 180.0;
+const twentyDouble = 20.0;
+const fortyDouble = 40.0;
+const sixtyDouble = 60.0;
+const eightyDouble = 80.0;
 
 // ints
 const nilInt = 0;

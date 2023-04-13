@@ -65,9 +65,16 @@ const degreeFahrenheit = '℉';
 const degreeCelcius = '℃';
 const degree = '°';
 const humidityUnit = 'g.m-3';
+const percent = '％';
 
 // other literals for IoT Unity Platform
 const iotUnityPlatformNameLiteral = 'IoT Unity Platform';
 const iotUnityPlatformHumidityLiteral = 'Humidity';
 const iotUnityPlatformTemperatureLiteral = 'Temperature';
 const iotUnityPlatformLoadingDataLiteral = 'Loading...';
+const iotUnityPlatformStatusLiteral = 'Status';
+const iotUnityPlatformLoadingLiteral = 'Loading';
+const iotUnityPlatformOnlineLiteral = 'Online';
+const iotUnityPlatformOfflineLiteral = 'Offline';
+const iotUnityPlatformErrorLiteral = 'Error';
+const iotUnityPlatformRetryLiteral = 'Retry';

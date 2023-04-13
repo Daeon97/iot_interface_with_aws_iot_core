@@ -14,115 +14,104 @@ class IotUnityPlatformHumidityWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(
-              spacingDouble,
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(
+          spacingDouble,
+        ),
+        decoration: BoxDecoration(
+          border: Border.all(),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(
+              smallSpacingDouble +
+                  tinySpacingDouble +
+                  tinySpacingDouble +
+                  tinySpacingDouble,
             ),
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(
-                  smallSpacingDouble +
-                      tinySpacingDouble +
-                      tinySpacingDouble +
-                      tinySpacingDouble,
+          ),
+        ),
+        child: Row(
+          children: [
+            BlocBuilder<IotUnityPlatformBloc, IotUnityPlatformState>(
+              builder: (_, iotUnityPlatformState) => FaIcon(
+                FontAwesomeIcons.droplet,
+                size: spacingDouble + tinySpacingDouble + veryTinySpacingDouble,
+                color: _computeAppropriateHumidityIconColor(
+                  iotUnityPlatformState,
                 ),
               ),
             ),
-            child: Row(
+            const SizedBox(
+              width: spacingDouble,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const Text(
+                  iotUnityPlatformHumidityLiteral,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
                 BlocBuilder<IotUnityPlatformBloc, IotUnityPlatformState>(
-                  builder: (_, iotUnityPlatformState) => FaIcon(
-                    FontAwesomeIcons.droplet,
-                    size: spacingDouble +
-                        tinySpacingDouble +
-                        veryTinySpacingDouble,
-                    color: _computeAppropriateTemperatureIconColor(
-                      iotUnityPlatformState,
+                  builder: (_, iotUnityPlatformState) => RichText(
+                    text: TextSpan(
+                      children: [
+                        WidgetSpan(
+                          child: Text(
+                            iotUnityPlatformState
+                                    is GotDataFromIotUnityPlatformState
+                                ? '${iotUnityPlatformState.iotUnityPlatformEntity.humidity.makePresentable}'
+                                : '$nilDouble',
+                            style: TextStyle(
+                              color: iotUnityPlatformState
+                                      is GotDataFromIotUnityPlatformState
+                                  ? Colors.black
+                                  : Colors.black38,
+                              fontSize: largeSpacingDouble,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const TextSpan(
+                          text: whiteSpace + whiteSpace,
+                        ),
+                        TextSpan(
+                          text: percent,
+                          style: TextStyle(
+                            color: iotUnityPlatformState
+                                    is GotDataFromIotUnityPlatformState
+                                ? Colors.black
+                                : Colors.black38,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(
-                  width: spacingDouble,
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      iotUnityPlatformHumidityLiteral,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    BlocBuilder<IotUnityPlatformBloc, IotUnityPlatformState>(
-                      builder: (_, iotUnityPlatformState) => RichText(
-                        text: TextSpan(
-                          children: [
-                            WidgetSpan(
-                              child: Text(
-                                iotUnityPlatformState
-                                        is GotDataFromIotUnityPlatformState
-                                    ? '${iotUnityPlatformState.iotUnityPlatformEntity.humidity.makePresentable}'
-                                    : '$nilDouble',
-                                style: TextStyle(
-                                  color: iotUnityPlatformState
-                                          is GotDataFromIotUnityPlatformState
-                                      ? Colors.black
-                                      : Colors.black38,
-                                  fontSize: largeSpacingDouble,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            const TextSpan(
-                              text: whiteSpace + whiteSpace,
-                            ),
-                            TextSpan(
-                              text: humidityUnit,
-                              style: TextStyle(
-                                color: iotUnityPlatformState
-                                        is GotDataFromIotUnityPlatformState
-                                    ? Colors.black
-                                    : Colors.black38,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       );
 
-  Color _computeAppropriateTemperatureIconColor(
+  Color _computeAppropriateHumidityIconColor(
     IotUnityPlatformState iotUnityPlatformState,
   ) {
     late Color color;
     if (iotUnityPlatformState is GotDataFromIotUnityPlatformState) {
-      final temperature =
-          iotUnityPlatformState.iotUnityPlatformEntity.temperature;
+      final temperature = iotUnityPlatformState.iotUnityPlatformEntity.humidity;
 
-      if (temperature >= nilDouble && temperature < twentyEightDouble) {
+      if (temperature >= nilDouble && temperature < twentyDouble) {
         color = Colors.lightBlueAccent;
-      } else if (temperature >= twentyEightDouble &&
-          temperature < fiftySixDouble) {
+      } else if (temperature >= twentyDouble && temperature < fortyDouble) {
         color = Colors.blue;
-      } else if (temperature >= fiftySixDouble &&
-          temperature < eightyFourDouble) {
+      } else if (temperature >= fortyDouble && temperature < sixtyDouble) {
         color = Colors.blueGrey;
-      } else if (temperature >= eightyFourDouble &&
-          temperature < hundredTwelveDouble) {
+      } else if (temperature >= sixtyDouble && temperature < eightyDouble) {
         color = Colors.orangeAccent;
       } else {
         color = Colors.red;

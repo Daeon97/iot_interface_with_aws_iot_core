@@ -78,7 +78,7 @@ class IotUnityPlatformTemperatureWidget extends StatelessWidget {
                           text: whiteSpace + whiteSpace,
                         ),
                         TextSpan(
-                          text: degreeCelcius,
+                          text: degreeFahrenheit,
                           style: TextStyle(
                             color: iotUnityPlatformState
                                     is GotDataFromIotUnityPlatformState
