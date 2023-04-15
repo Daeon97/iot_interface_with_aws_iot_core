@@ -38,13 +38,13 @@ class IotUnityPlatformBloc
           (failureOrIotUnityPlatformEntity) {
             failureOrIotUnityPlatformEntity.fold(
               (failure) {
-                if (failure is! MessageTopicMismatchFailure) {
-                  add(
-                    FailedToGetDataFromIotUnityPlatformEvent(
-                      failure.message,
-                    ),
-                  );
-                }
+                // if (failure is! MessageTopicMismatchFailure) {
+                add(
+                  FailedToGetDataFromIotUnityPlatformEvent(
+                    failure.message,
+                  ),
+                );
+                // }
               },
               (iotUnityPlatformEntity) {
                 add(

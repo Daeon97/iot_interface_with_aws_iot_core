@@ -32,12 +32,12 @@
             <td></td>
             <td class="headerItem">Lines:</td>
             <td class="headerCovTableEntry">8</td>
-            <td class="headerCovTableEntry">29</td>
-            <td class="headerCovTableEntryLo">27.6 %</td>
+            <td class="headerCovTableEntry">30</td>
+            <td class="headerCovTableEntryLo">26.7 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2023-04-04 16:47:18</td>
+            <td class="headerValue">2023-04-15 14:55:24</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -66,13 +66,13 @@
 <a name="4"><span class="lineNum">       4 </span>            : </a>
 <a name="5"><span class="lineNum">       5 </span>            : import 'package:dartz/dartz.dart';</a>
 <a name="6"><span class="lineNum">       6 </span>            : import 'package:flutter/foundation.dart';</a>
-<a name="7"><span class="lineNum">       7 </span>            : import 'package:iot_interface_with_aws_iot_core/core/errors/errors.dart';</a>
-<a name="8"><span class="lineNum">       8 </span>            : import 'package:iot_interface_with_aws_iot_core/core/resources/resources.dart'</a>
-<a name="9"><span class="lineNum">       9 </span>            :     as res;</a>
-<a name="10"><span class="lineNum">      10 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/data_sources.dart';</a>
-<a name="11"><span class="lineNum">      11 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/models.dart';</a>
-<a name="12"><span class="lineNum">      12 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/entities.dart';</a>
-<a name="13"><span class="lineNum">      13 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/repositories.dart';</a>
+<a name="7"><span class="lineNum">       7 </span>            : import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';</a>
+<a name="8"><span class="lineNum">       8 </span>            : import 'package:iot_interface_with_aws_iot_core/core/errors/failure.dart';</a>
+<a name="9"><span class="lineNum">       9 </span>            : import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';</a>
+<a name="10"><span class="lineNum">      10 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';</a>
+<a name="11"><span class="lineNum">      11 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';</a>
+<a name="12"><span class="lineNum">      12 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/entities/iot_unity_platform_entity.dart';</a>
+<a name="13"><span class="lineNum">      13 </span>            : import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/domain/repositories/iot_unity_platform_repository.dart';</a>
 <a name="14"><span class="lineNum">      14 </span>            : </a>
 <a name="15"><span class="lineNum">      15 </span>            : class IotUnityPlatformRepositoryImplementation</a>
 <a name="16"><span class="lineNum">      16 </span>            :     implements IotUnityPlatformRepository {</a>
@@ -125,60 +125,65 @@
 <a name="63"><span class="lineNum">      63 </span>            :   }</a>
 <a name="64"><span class="lineNum">      64 </span>            : </a>
 <a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 :   Failure _computeFailure(dynamic error) {</span></a>
-<a name="66"><span class="lineNum">      66 </span>            :     late final Failure failure;</a>
+<a name="66"><span class="lineNum">      66 </span>            :     late Failure failure;</a>
 <a name="67"><span class="lineNum">      67 </span>            : </a>
 <a name="68"><span class="lineNum">      68 </span><span class="lineNoCov">          0 :     if (error is CustomException) {</span></a>
 <a name="69"><span class="lineNum">      69 </span>            :       switch (CustomException) {</a>
 <a name="70"><span class="lineNum">      70 </span><span class="lineNoCov">          0 :         case NoMessagesFromBrokerException:</span></a>
 <a name="71"><span class="lineNum">      71 </span>            :           failure = const NoMessagesFromBrokerFailure(</a>
-<a name="72"><span class="lineNum">      72 </span>            :             message: res.noMessagesFromBrokerFailureMessage,</a>
+<a name="72"><span class="lineNum">      72 </span>            :             message: noMessagesFromBrokerFailureMessage,</a>
 <a name="73"><span class="lineNum">      73 </span>            :           );</a>
 <a name="74"><span class="lineNum">      74 </span>            :           break;</a>
 <a name="75"><span class="lineNum">      75 </span><span class="lineNoCov">          0 :         case BadCertificateException:</span></a>
 <a name="76"><span class="lineNum">      76 </span>            :           failure = const BadCertificateFailure(</a>
-<a name="77"><span class="lineNum">      77 </span>            :             message: res.badCertificateFailureMessage,</a>
+<a name="77"><span class="lineNum">      77 </span>            :             message: badCertificateFailureMessage,</a>
 <a name="78"><span class="lineNum">      78 </span>            :           );</a>
 <a name="79"><span class="lineNum">      79 </span>            :           break;</a>
 <a name="80"><span class="lineNum">      80 </span><span class="lineNoCov">          0 :         case TopicSubscriptionException:</span></a>
 <a name="81"><span class="lineNum">      81 </span>            :           failure = const TopicSubscriptionFailure(</a>
-<a name="82"><span class="lineNum">      82 </span>            :             message: res.topicSubscriptionFailureMessage,</a>
+<a name="82"><span class="lineNum">      82 </span>            :             message: topicSubscriptionFailureMessage,</a>
 <a name="83"><span class="lineNum">      83 </span>            :           );</a>
 <a name="84"><span class="lineNum">      84 </span>            :           break;</a>
 <a name="85"><span class="lineNum">      85 </span><span class="lineNoCov">          0 :         case UnsolicitedDisconnectionException:</span></a>
 <a name="86"><span class="lineNum">      86 </span>            :           failure = const UnsolicitedDisconnectionFailure(</a>
-<a name="87"><span class="lineNum">      87 </span>            :             message: res.unsolicitedDisconnectionFailureMessage,</a>
+<a name="87"><span class="lineNum">      87 </span>            :             message: unsolicitedDisconnectionFailureMessage,</a>
 <a name="88"><span class="lineNum">      88 </span>            :           );</a>
 <a name="89"><span class="lineNum">      89 </span>            :           break;</a>
 <a name="90"><span class="lineNum">      90 </span><span class="lineNoCov">          0 :         case CouldNotConnectToBrokerException:</span></a>
 <a name="91"><span class="lineNum">      91 </span>            :           failure = const CouldNotConnectToBrokerFailure(</a>
-<a name="92"><span class="lineNum">      92 </span>            :             message: res.couldNotConnectToBrokerFailureMessage,</a>
+<a name="92"><span class="lineNum">      92 </span>            :             message: couldNotConnectToBrokerFailureMessage,</a>
 <a name="93"><span class="lineNum">      93 </span>            :           );</a>
 <a name="94"><span class="lineNum">      94 </span>            :           break;</a>
 <a name="95"><span class="lineNum">      95 </span><span class="lineNoCov">          0 :         case MessageTopicMismatchException:</span></a>
 <a name="96"><span class="lineNum">      96 </span>            :           failure = const MessageTopicMismatchFailure(</a>
-<a name="97"><span class="lineNum">      97 </span>            :             message: res.messageTopicMismatchFailureMessage,</a>
+<a name="97"><span class="lineNum">      97 </span>            :             message: messageTopicMismatchFailureMessage,</a>
 <a name="98"><span class="lineNum">      98 </span>            :           );</a>
 <a name="99"><span class="lineNum">      99 </span>            :           break;</a>
-<a name="100"><span class="lineNum">     100 </span>            :         default:</a>
-<a name="101"><span class="lineNum">     101 </span>            :           failure = const UnknownFailure(</a>
-<a name="102"><span class="lineNum">     102 </span>            :             message: res.unknownFailureMessage,</a>
+<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :         case BadMessageFormatException:</span></a>
+<a name="101"><span class="lineNum">     101 </span>            :           failure = const BadMessageFormatFailure(</a>
+<a name="102"><span class="lineNum">     102 </span>            :             message: badMessageFormatFailureMessage,</a>
 <a name="103"><span class="lineNum">     103 </span>            :           );</a>
 <a name="104"><span class="lineNum">     104 </span>            :           break;</a>
-<a name="105"><span class="lineNum">     105 </span>            :       }</a>
-<a name="106"><span class="lineNum">     106 </span>            :     } else {</a>
-<a name="107"><span class="lineNum">     107 </span>            :       failure = const UnknownFailure(</a>
-<a name="108"><span class="lineNum">     108 </span>            :         message: res.unknownFailureMessage,</a>
-<a name="109"><span class="lineNum">     109 </span>            :       );</a>
-<a name="110"><span class="lineNum">     110 </span>            :     }</a>
-<a name="111"><span class="lineNum">     111 </span>            : </a>
-<a name="112"><span class="lineNum">     112 </span>            :     return failure;</a>
-<a name="113"><span class="lineNum">     113 </span>            :   }</a>
-<a name="114"><span class="lineNum">     114 </span>            : </a>
-<a name="115"><span class="lineNum">     115 </span><span class="lineNoCov">          0 :   @visibleForTesting</span></a>
-<a name="116"><span class="lineNum">     116 </span><span class="lineNoCov">          0 :   Failure computeFailure(dynamic error) =&gt; _computeFailure(</span></a>
-<a name="117"><span class="lineNum">     117 </span>            :         error,</a>
-<a name="118"><span class="lineNum">     118 </span>            :       );</a>
-<a name="119"><span class="lineNum">     119 </span>            : }</a>
+<a name="105"><span class="lineNum">     105 </span>            :         default:</a>
+<a name="106"><span class="lineNum">     106 </span>            :           failure = const UnknownFailure(</a>
+<a name="107"><span class="lineNum">     107 </span>            :             message: unknownFailureMessage,</a>
+<a name="108"><span class="lineNum">     108 </span>            :           );</a>
+<a name="109"><span class="lineNum">     109 </span>            :           break;</a>
+<a name="110"><span class="lineNum">     110 </span>            :       }</a>
+<a name="111"><span class="lineNum">     111 </span>            :     } else {</a>
+<a name="112"><span class="lineNum">     112 </span>            :       failure = const UnknownFailure(</a>
+<a name="113"><span class="lineNum">     113 </span>            :         message: unknownFailureMessage,</a>
+<a name="114"><span class="lineNum">     114 </span>            :       );</a>
+<a name="115"><span class="lineNum">     115 </span>            :     }</a>
+<a name="116"><span class="lineNum">     116 </span>            : </a>
+<a name="117"><span class="lineNum">     117 </span>            :     return failure;</a>
+<a name="118"><span class="lineNum">     118 </span>            :   }</a>
+<a name="119"><span class="lineNum">     119 </span>            : </a>
+<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :   @visibleForTesting</span></a>
+<a name="121"><span class="lineNum">     121 </span><span class="lineNoCov">          0 :   Failure computeFailure(dynamic error) =&gt; _computeFailure(</span></a>
+<a name="122"><span class="lineNum">     122 </span>            :         error,</a>
+<a name="123"><span class="lineNum">     123 </span>            :       );</a>
+<a name="124"><span class="lineNum">     124 </span>            : }</a>
 </pre>
       </td>
     </tr>

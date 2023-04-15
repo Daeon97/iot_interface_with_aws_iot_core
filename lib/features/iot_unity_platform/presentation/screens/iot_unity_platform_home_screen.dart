@@ -25,17 +25,17 @@ class IotUnityPlatformHomeScreenState
     extends State<IotUnityPlatformHomeScreen> {
   @override
   void initState() {
-    // BlocProvider.of<IotUnityPlatformBloc>(context).add(
-    //   const ListenDataFromIotUnityPlatformEvent(),
-    // );
+    BlocProvider.of<IotUnityPlatformBloc>(context).add(
+      const ListenDataFromIotUnityPlatformEvent(),
+    );
     super.initState();
   }
 
   @override
   void dispose() {
-    // BlocProvider.of<IotUnityPlatformBloc>(context).add(
-    //   const StopListeningDataFromIotUnityPlatformEvent(),
-    // );
+    BlocProvider.of<IotUnityPlatformBloc>(context).add(
+      const StopListeningDataFromIotUnityPlatformEvent(),
+    );
     super.dispose();
   }
 

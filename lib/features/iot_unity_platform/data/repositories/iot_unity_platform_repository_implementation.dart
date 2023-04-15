@@ -65,53 +65,47 @@ class IotUnityPlatformRepositoryImplementation
   Failure _computeFailure(dynamic error) {
     late Failure failure;
 
-    if (error is CustomException) {
-      switch (CustomException) {
-        case NoMessagesFromBrokerException:
-          failure = const NoMessagesFromBrokerFailure(
-            message: noMessagesFromBrokerFailureMessage,
-          );
-          break;
-        case BadCertificateException:
-          failure = const BadCertificateFailure(
-            message: badCertificateFailureMessage,
-          );
-          break;
-        case TopicSubscriptionException:
-          failure = const TopicSubscriptionFailure(
-            message: topicSubscriptionFailureMessage,
-          );
-          break;
-        case UnsolicitedDisconnectionException:
-          failure = const UnsolicitedDisconnectionFailure(
-            message: unsolicitedDisconnectionFailureMessage,
-          );
-          break;
-        case CouldNotConnectToBrokerException:
-          failure = const CouldNotConnectToBrokerFailure(
-            message: couldNotConnectToBrokerFailureMessage,
-          );
-          break;
-        case MessageTopicMismatchException:
-          failure = const MessageTopicMismatchFailure(
-            message: messageTopicMismatchFailureMessage,
-          );
-          break;
-        case BadMessageFormatException:
-          failure = const BadMessageFormatFailure(
-            message: badMessageFormatFailureMessage,
-          );
-          break;
-        default:
-          failure = const UnknownFailure(
-            message: unknownFailureMessage,
-          );
-          break;
-      }
-    } else {
-      failure = const UnknownFailure(
-        message: unknownFailureMessage,
-      );
+    switch (error.runtimeType) {
+      case NoMessagesFromBrokerException:
+        failure = const NoMessagesFromBrokerFailure(
+          message: noMessagesFromBrokerFailureMessage,
+        );
+        break;
+      case BadCertificateException:
+        failure = const BadCertificateFailure(
+          message: badCertificateFailureMessage,
+        );
+        break;
+      case TopicSubscriptionException:
+        failure = const TopicSubscriptionFailure(
+          message: topicSubscriptionFailureMessage,
+        );
+        break;
+      case UnsolicitedDisconnectionException:
+        failure = const UnsolicitedDisconnectionFailure(
+          message: unsolicitedDisconnectionFailureMessage,
+        );
+        break;
+      case CouldNotConnectToBrokerException:
+        failure = const CouldNotConnectToBrokerFailure(
+          message: couldNotConnectToBrokerFailureMessage,
+        );
+        break;
+      case MessageTopicMismatchException:
+        failure = const MessageTopicMismatchFailure(
+          message: messageTopicMismatchFailureMessage,
+        );
+        break;
+      case BadMessageFormatException:
+        failure = const BadMessageFormatFailure(
+          message: badMessageFormatFailureMessage,
+        );
+        break;
+      default:
+        failure = const UnknownFailure(
+          message: unknownFailureMessage,
+        );
+        break;
     }
 
     return failure;

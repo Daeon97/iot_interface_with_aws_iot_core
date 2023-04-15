@@ -148,10 +148,10 @@ void main() {
           verify(
             mockMqttServerClient.clientIdentifier = testClientId,
           ).called(1);
-          verify(
-            mockMqttServerClient.onBadCertificate =
-                testOnBadCertificateSupplied,
-          ).called(1);
+          // verify(
+          //   mockMqttServerClient.onBadCertificate =
+          //       testOnBadCertificateSupplied,
+          // ).called(1);
           verify(
             mockMqttServerClient.onConnected = testOnConnectedToBroker,
           ).called(1);

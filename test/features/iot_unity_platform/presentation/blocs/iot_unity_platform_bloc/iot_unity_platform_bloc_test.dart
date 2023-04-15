@@ -62,27 +62,15 @@ void main() {
         },
       );
 
-      blocTest<IotUnityPlatformBloc, IotUnityPlatformState>(
-        '''
-          should emit [GettingDataFromIotUnityPlatformState] first before
-           when [ListenDataFromIotUnityPlatformEvent]
-          is called
-        ''',
-        build: () => iotUnityPlatformBloc,
-        act: (iotUnityPlatformBloc) => iotUnityPlatformBloc.add(
-          const ListenDataFromIotUnityPlatformEvent(),
-        ),
-        expect: () => [
-          const GettingDataFromIotUnityPlatformState(),
-        ],
-      );
-
       group(
         'ListenDataFromIotUnityPlatformEvent',
         () {
           const testIotUnityPlatformEntity = IotUnityPlatformEntity(
             humidity: 1.0,
             temperature: 1.0,
+          );
+          const Failure testFailure = CouldNotConnectToBrokerFailure(
+            message: 'test message',
           );
 
           blocTest<IotUnityPlatformBloc, IotUnityPlatformState>(
@@ -92,7 +80,8 @@ void main() {
               the appropriate topic name and then
               [GotDataFromIotUnityPlatformState] subsequently with the
               appropriate [IotUnityPlatformEntity] when
-              [GetDataFromIotUnityPlatformUseCase] is listened on
+              [GetDataFromIotUnityPlatformUseCase] is listened on and there are
+              no errors
             ''',
             build: () => iotUnityPlatformBloc,
             act: (iotUnityPlatformBloc) {
@@ -128,6 +117,95 @@ void main() {
                 testIotUnityPlatformEntity,
               ),
             ],
+          );
+
+          blocTest<IotUnityPlatformBloc, IotUnityPlatformState>(
+            '''
+              should emit [GettingDataFromIotUnityPlatformState] first, call
+              [IotUnityPlatformBloc.getDataFromIotUnityPlatformUseCase] with
+              the appropriate topic name and then
+              [FailedToGetDataFromIotUnityPlatformState] subsequently with the
+              appropriate message when [GetDataFromIotUnityPlatformUseCase] is
+              listened on and there are errors and the failure is not
+              MessageTopicMismatchFailure
+            ''',
+            build: () => iotUnityPlatformBloc,
+            act: (iotUnityPlatformBloc) {
+              when(
+                mockGetDataFromIotUnityPlatformUseCase(
+                  topicName: anyNamed(
+                    'topicName',
+                  ),
+                ),
+              ).thenAnswer(
+                (_) => Stream.value(
+                  const Left(
+                    testFailure,
+                  ),
+                ),
+              );
+              iotUnityPlatformBloc.add(
+                const ListenDataFromIotUnityPlatformEvent(),
+              );
+            },
+            verify: (iotUnityPlatformBloc) {
+              verify(
+                iotUnityPlatformBloc.getDataFromIotUnityPlatformUseCase(
+                  topicName: testTopicName,
+                ),
+              ).called(
+                1,
+              );
+            },
+            expect: () => [
+              const GettingDataFromIotUnityPlatformState(),
+              FailedToGetDataFromIotUnityPlatformState(
+                testFailure.message,
+              ),
+            ],
+          );
+        },
+      );
+
+      group(
+        'StopListeningDataFromIotUnityPlatformEvent',
+        () {
+          late StreamSubscription<Either<Failure, IotUnityPlatformEntity>>?
+              mockGetDataFromIotUnityPlatformUseCaseStreamSubscription;
+
+          setUp(
+            () {
+              mockGetDataFromIotUnityPlatformUseCaseStreamSubscription =
+                  mockGetDataFromIotUnityPlatformUseCase(
+                topicName: testTopicName,
+              ).listen((event) {});
+            },
+          );
+
+          tearDown(
+            () {
+              mockGetDataFromIotUnityPlatformUseCaseStreamSubscription
+                  ?.cancel();
+            },
+          );
+
+          blocTest<IotUnityPlatformBloc, IotUnityPlatformState>(
+            '''
+              Should cancel the subscription on the
+              [GetDataFromIotUnityPlatformUseCase] stream when
+              [StopListeningDataFromIotUnityPlatformEvent] is dispatched
+            ''',
+            setUp: () {},
+            build: () => iotUnityPlatformBloc,
+            act: (iotUnityPlatformBloc) {
+              iotUnityPlatformBloc.add(
+                const StopListeningDataFromIotUnityPlatformEvent(),
+              );
+            },
+            verify: (_) {
+              mockGetDataFromIotUnityPlatformUseCaseStreamSubscription
+                  ?.cancel();
+            },
           );
         },
       );

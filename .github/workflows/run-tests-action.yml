@@ -17,10 +17,12 @@ jobs:
           channel: 'stable'
           cache: true
 
-#      # Create certificates
-#      - name: Create certificates
-#        run: |
-#          touch
+      # Create certificates
+      - name: Create certificates
+        run: |
+          cat device_certificate.pem.crt.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > device_certificate.pem.crt
+          cat private_key.pem.key.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > private_key.pem.key
+          cat root_certificate_authority.pem.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > root_certificate_authority.pem
 
       # Create .env file
       - name: Create .env file
