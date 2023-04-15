@@ -20,9 +20,9 @@ jobs:
       # Create certificates
       - name: Create certificates
         run: |
-          cat device_certificate.pem.crt.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > device_certificate.pem.crt
-          cat private_key.pem.key.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > private_key.pem.key
-          cat root_certificate_authority.pem.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > root_certificate_authority.pem
+          cat assets/certificates/device_certificate.pem.crt.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > assets/certificates/device_certificate.pem.crt
+          cat assets/certificates/private_key.pem.key.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > assets/certificates/private_key.pem.key
+          cat assets/certificates/root_certificate_authority.pem.enc | openssl aes-256-cbc -d -pass pass:${{ secrets.CERTIFICATES_ENCRYPTION_PASSWORD }} > assets/certificates/root_certificate_authority.pem
 
       # Create .env file
       - name: Create .env file
