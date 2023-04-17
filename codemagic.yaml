@@ -1,0 +1,54 @@
+workflows:
+  publish-to-slack-channel-workflow:
+    name: Publish to Slack Channel Workflow
+    max_build_duration: 90
+    instance_type: mac_mini_m1
+
+    environment:
+      flutter: stable
+      groups:
+        - certificate-variables
+        - environment-variables
+
+    triggering:
+      events:
+        - pull_request
+        - push
+      branch_patterns:
+        - pattern: "master"
+          include: true
+          source: false
+
+    scripts:
+      - name: Create certificates
+        script: |
+          cat assets/certificates/device_certificate.pem.crt.enc | openssl aes-256-cbc -d -pass pass:$ENCRYPTION_PASSWORD > assets/certificates/device_certificate.pem.crt
+          cat assets/certificates/private_key.pem.key.enc | openssl aes-256-cbc -d -pass pass:$ENCRYPTION_PASSWORD > assets/certificates/private_key.pem.key
+          cat assets/certificates/root_certificate_authority.pem.enc | openssl aes-256-cbc -d -pass pass:$ENCRYPTION_PASSWORD > assets/certificates/root_certificate_authority.pem
+      - name: Create .env file
+        script: |
+          echo "IOT_UNITY_PLATFORM_TOPIC_NAME=$IOT_UNITY_PLATFORM_TOPIC_NAME" > .env
+          echo "AWS_IOT_CORE_SERVER_END_POINT=$AWS_IOT_CORE_SERVER_END_POINT" >> .env
+      - name: Get dependencies
+        script: |
+          flutter pub get
+      - name: Build debug apk
+        script: |
+          flutter build apk --debug
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-debug.apk
+
+    publishing:
+      email:
+        recipients:
+          - engelmmanuel@gmail.com
+        notify:
+          success: true
+          failure: true
+      slack:
+        channel: '#publish'
+        notify_on_build_start: true
+        notify:
+          success: true
+          failure: true
