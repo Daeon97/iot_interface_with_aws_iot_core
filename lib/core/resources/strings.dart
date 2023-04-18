@@ -41,7 +41,8 @@ const couldNotConnectToBrokerExceptionMessage =
     '''Could not connect to broker exception. Connection status -> state: %s, return code: %s, disconnect origin: %s''';
 const messageTopicMismatchExceptionMessage =
     '''Message topic mismatch exception. MQTT received message -> payload: %s, topic: %s, as published message -> payload message: %s''';
-const badMessageFormatExceptionMessage = '''...''';
+const badMessageFormatExceptionMessage =
+    '''Bad message format exception. Expected format does not correspond with actual format''';
 
 // failure messages
 const noMessagesFromBrokerFailureMessage = 'No data';
@@ -53,7 +54,7 @@ const unsolicitedDisconnectionFailureMessage =
 const couldNotConnectToBrokerFailureMessage = 'Unable to connect to broker';
 const messageTopicMismatchFailureMessage =
     'Received message topic does not correspond to current topic';
-const badMessageFormatFailureMessage = '''...''';
+const badMessageFormatFailureMessage = 'Received message was badly formatted';
 const unknownFailureMessage = 'An unknown error occurred';
 
 // empty strings and special characters
@@ -74,7 +75,7 @@ const iotUnityPlatformTemperatureLiteral = 'Temperature';
 const iotUnityPlatformLoadingDataLiteral = 'Loading...';
 const iotUnityPlatformStatusLiteral = 'Status';
 const iotUnityPlatformLoadingLiteral = 'Loading';
-const iotUnityPlatformOnlineLiteral = 'Online';
-const iotUnityPlatformOfflineLiteral = 'Offline';
+const iotUnityPlatformActiveLiteral = 'Active';
+const iotUnityPlatformInactiveLiteral = 'Inactive';
 const iotUnityPlatformErrorLiteral = 'Error';
 const iotUnityPlatformRetryLiteral = 'Retry';

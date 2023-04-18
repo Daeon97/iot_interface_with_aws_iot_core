@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2023-04-15 14:55:24</td>
+            <td class="headerValue">2023-04-18 17:49:23</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -127,63 +127,57 @@
 <a name="65"><span class="lineNum">      65 </span><span class="lineNoCov">          0 :   Failure _computeFailure(dynamic error) {</span></a>
 <a name="66"><span class="lineNum">      66 </span>            :     late Failure failure;</a>
 <a name="67"><span class="lineNum">      67 </span>            : </a>
-<a name="68"><span class="lineNum">      68 </span><span class="lineNoCov">          0 :     if (error is CustomException) {</span></a>
-<a name="69"><span class="lineNum">      69 </span>            :       switch (CustomException) {</a>
-<a name="70"><span class="lineNum">      70 </span><span class="lineNoCov">          0 :         case NoMessagesFromBrokerException:</span></a>
-<a name="71"><span class="lineNum">      71 </span>            :           failure = const NoMessagesFromBrokerFailure(</a>
-<a name="72"><span class="lineNum">      72 </span>            :             message: noMessagesFromBrokerFailureMessage,</a>
-<a name="73"><span class="lineNum">      73 </span>            :           );</a>
-<a name="74"><span class="lineNum">      74 </span>            :           break;</a>
-<a name="75"><span class="lineNum">      75 </span><span class="lineNoCov">          0 :         case BadCertificateException:</span></a>
-<a name="76"><span class="lineNum">      76 </span>            :           failure = const BadCertificateFailure(</a>
-<a name="77"><span class="lineNum">      77 </span>            :             message: badCertificateFailureMessage,</a>
-<a name="78"><span class="lineNum">      78 </span>            :           );</a>
-<a name="79"><span class="lineNum">      79 </span>            :           break;</a>
-<a name="80"><span class="lineNum">      80 </span><span class="lineNoCov">          0 :         case TopicSubscriptionException:</span></a>
-<a name="81"><span class="lineNum">      81 </span>            :           failure = const TopicSubscriptionFailure(</a>
-<a name="82"><span class="lineNum">      82 </span>            :             message: topicSubscriptionFailureMessage,</a>
-<a name="83"><span class="lineNum">      83 </span>            :           );</a>
-<a name="84"><span class="lineNum">      84 </span>            :           break;</a>
-<a name="85"><span class="lineNum">      85 </span><span class="lineNoCov">          0 :         case UnsolicitedDisconnectionException:</span></a>
-<a name="86"><span class="lineNum">      86 </span>            :           failure = const UnsolicitedDisconnectionFailure(</a>
-<a name="87"><span class="lineNum">      87 </span>            :             message: unsolicitedDisconnectionFailureMessage,</a>
-<a name="88"><span class="lineNum">      88 </span>            :           );</a>
-<a name="89"><span class="lineNum">      89 </span>            :           break;</a>
-<a name="90"><span class="lineNum">      90 </span><span class="lineNoCov">          0 :         case CouldNotConnectToBrokerException:</span></a>
-<a name="91"><span class="lineNum">      91 </span>            :           failure = const CouldNotConnectToBrokerFailure(</a>
-<a name="92"><span class="lineNum">      92 </span>            :             message: couldNotConnectToBrokerFailureMessage,</a>
-<a name="93"><span class="lineNum">      93 </span>            :           );</a>
-<a name="94"><span class="lineNum">      94 </span>            :           break;</a>
-<a name="95"><span class="lineNum">      95 </span><span class="lineNoCov">          0 :         case MessageTopicMismatchException:</span></a>
-<a name="96"><span class="lineNum">      96 </span>            :           failure = const MessageTopicMismatchFailure(</a>
-<a name="97"><span class="lineNum">      97 </span>            :             message: messageTopicMismatchFailureMessage,</a>
-<a name="98"><span class="lineNum">      98 </span>            :           );</a>
-<a name="99"><span class="lineNum">      99 </span>            :           break;</a>
-<a name="100"><span class="lineNum">     100 </span><span class="lineNoCov">          0 :         case BadMessageFormatException:</span></a>
-<a name="101"><span class="lineNum">     101 </span>            :           failure = const BadMessageFormatFailure(</a>
-<a name="102"><span class="lineNum">     102 </span>            :             message: badMessageFormatFailureMessage,</a>
-<a name="103"><span class="lineNum">     103 </span>            :           );</a>
-<a name="104"><span class="lineNum">     104 </span>            :           break;</a>
-<a name="105"><span class="lineNum">     105 </span>            :         default:</a>
-<a name="106"><span class="lineNum">     106 </span>            :           failure = const UnknownFailure(</a>
-<a name="107"><span class="lineNum">     107 </span>            :             message: unknownFailureMessage,</a>
-<a name="108"><span class="lineNum">     108 </span>            :           );</a>
-<a name="109"><span class="lineNum">     109 </span>            :           break;</a>
-<a name="110"><span class="lineNum">     110 </span>            :       }</a>
-<a name="111"><span class="lineNum">     111 </span>            :     } else {</a>
-<a name="112"><span class="lineNum">     112 </span>            :       failure = const UnknownFailure(</a>
-<a name="113"><span class="lineNum">     113 </span>            :         message: unknownFailureMessage,</a>
-<a name="114"><span class="lineNum">     114 </span>            :       );</a>
-<a name="115"><span class="lineNum">     115 </span>            :     }</a>
-<a name="116"><span class="lineNum">     116 </span>            : </a>
-<a name="117"><span class="lineNum">     117 </span>            :     return failure;</a>
-<a name="118"><span class="lineNum">     118 </span>            :   }</a>
-<a name="119"><span class="lineNum">     119 </span>            : </a>
-<a name="120"><span class="lineNum">     120 </span><span class="lineNoCov">          0 :   @visibleForTesting</span></a>
-<a name="121"><span class="lineNum">     121 </span><span class="lineNoCov">          0 :   Failure computeFailure(dynamic error) =&gt; _computeFailure(</span></a>
-<a name="122"><span class="lineNum">     122 </span>            :         error,</a>
-<a name="123"><span class="lineNum">     123 </span>            :       );</a>
-<a name="124"><span class="lineNum">     124 </span>            : }</a>
+<a name="68"><span class="lineNum">      68 </span><span class="lineNoCov">          0 :     switch (error.runtimeType) {</span></a>
+<a name="69"><span class="lineNum">      69 </span><span class="lineNoCov">          0 :       case NoMessagesFromBrokerException:</span></a>
+<a name="70"><span class="lineNum">      70 </span>            :         failure = const NoMessagesFromBrokerFailure(</a>
+<a name="71"><span class="lineNum">      71 </span>            :           message: noMessagesFromBrokerFailureMessage,</a>
+<a name="72"><span class="lineNum">      72 </span>            :         );</a>
+<a name="73"><span class="lineNum">      73 </span>            :         break;</a>
+<a name="74"><span class="lineNum">      74 </span><span class="lineNoCov">          0 :       case BadCertificateException:</span></a>
+<a name="75"><span class="lineNum">      75 </span>            :         failure = const BadCertificateFailure(</a>
+<a name="76"><span class="lineNum">      76 </span>            :           message: badCertificateFailureMessage,</a>
+<a name="77"><span class="lineNum">      77 </span>            :         );</a>
+<a name="78"><span class="lineNum">      78 </span>            :         break;</a>
+<a name="79"><span class="lineNum">      79 </span><span class="lineNoCov">          0 :       case TopicSubscriptionException:</span></a>
+<a name="80"><span class="lineNum">      80 </span>            :         failure = const TopicSubscriptionFailure(</a>
+<a name="81"><span class="lineNum">      81 </span>            :           message: topicSubscriptionFailureMessage,</a>
+<a name="82"><span class="lineNum">      82 </span>            :         );</a>
+<a name="83"><span class="lineNum">      83 </span>            :         break;</a>
+<a name="84"><span class="lineNum">      84 </span><span class="lineNoCov">          0 :       case UnsolicitedDisconnectionException:</span></a>
+<a name="85"><span class="lineNum">      85 </span>            :         failure = const UnsolicitedDisconnectionFailure(</a>
+<a name="86"><span class="lineNum">      86 </span>            :           message: unsolicitedDisconnectionFailureMessage,</a>
+<a name="87"><span class="lineNum">      87 </span>            :         );</a>
+<a name="88"><span class="lineNum">      88 </span>            :         break;</a>
+<a name="89"><span class="lineNum">      89 </span><span class="lineNoCov">          0 :       case CouldNotConnectToBrokerException:</span></a>
+<a name="90"><span class="lineNum">      90 </span>            :         failure = const CouldNotConnectToBrokerFailure(</a>
+<a name="91"><span class="lineNum">      91 </span>            :           message: couldNotConnectToBrokerFailureMessage,</a>
+<a name="92"><span class="lineNum">      92 </span>            :         );</a>
+<a name="93"><span class="lineNum">      93 </span>            :         break;</a>
+<a name="94"><span class="lineNum">      94 </span><span class="lineNoCov">          0 :       case MessageTopicMismatchException:</span></a>
+<a name="95"><span class="lineNum">      95 </span>            :         failure = const MessageTopicMismatchFailure(</a>
+<a name="96"><span class="lineNum">      96 </span>            :           message: messageTopicMismatchFailureMessage,</a>
+<a name="97"><span class="lineNum">      97 </span>            :         );</a>
+<a name="98"><span class="lineNum">      98 </span>            :         break;</a>
+<a name="99"><span class="lineNum">      99 </span><span class="lineNoCov">          0 :       case BadMessageFormatException:</span></a>
+<a name="100"><span class="lineNum">     100 </span>            :         failure = const BadMessageFormatFailure(</a>
+<a name="101"><span class="lineNum">     101 </span>            :           message: badMessageFormatFailureMessage,</a>
+<a name="102"><span class="lineNum">     102 </span>            :         );</a>
+<a name="103"><span class="lineNum">     103 </span>            :         break;</a>
+<a name="104"><span class="lineNum">     104 </span>            :       default:</a>
+<a name="105"><span class="lineNum">     105 </span>            :         failure = const UnknownFailure(</a>
+<a name="106"><span class="lineNum">     106 </span>            :           message: unknownFailureMessage,</a>
+<a name="107"><span class="lineNum">     107 </span>            :         );</a>
+<a name="108"><span class="lineNum">     108 </span>            :         break;</a>
+<a name="109"><span class="lineNum">     109 </span>            :     }</a>
+<a name="110"><span class="lineNum">     110 </span>            : </a>
+<a name="111"><span class="lineNum">     111 </span>            :     return failure;</a>
+<a name="112"><span class="lineNum">     112 </span>            :   }</a>
+<a name="113"><span class="lineNum">     113 </span>            : </a>
+<a name="114"><span class="lineNum">     114 </span><span class="lineNoCov">          0 :   @visibleForTesting</span></a>
+<a name="115"><span class="lineNum">     115 </span><span class="lineNoCov">          0 :   Failure computeFailure(dynamic error) =&gt; _computeFailure(</span></a>
+<a name="116"><span class="lineNum">     116 </span>            :         error,</a>
+<a name="117"><span class="lineNum">     117 </span>            :       );</a>
+<a name="118"><span class="lineNum">     118 </span>            : }</a>
 </pre>
       </td>
     </tr>

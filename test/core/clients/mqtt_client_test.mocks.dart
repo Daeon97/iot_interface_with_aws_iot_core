@@ -130,6 +130,21 @@ class MockMqttServerClient extends _i1.Mock implements _i4.MqttServerClient {
         returnValueForMissingStub: 0,
       ) as int);
   @override
+  List<_i2.RawSocketOption> get socketOptions => (super.noSuchMethod(
+        Invocation.getter(#socketOptions),
+        returnValue: <_i2.RawSocketOption>[],
+        returnValueForMissingStub: <_i2.RawSocketOption>[],
+      ) as List<_i2.RawSocketOption>);
+  @override
+  set socketOptions(List<_i2.RawSocketOption>? _socketOptions) =>
+      super.noSuchMethod(
+        Invocation.setter(
+          #socketOptions,
+          _socketOptions,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
   String get server => (super.noSuchMethod(
         Invocation.getter(#server),
         returnValue: '',

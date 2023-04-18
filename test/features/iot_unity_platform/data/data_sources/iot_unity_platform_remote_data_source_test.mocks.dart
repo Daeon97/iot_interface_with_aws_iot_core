@@ -5,6 +5,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:async' as _i5;
 import 'dart:io' as _i2;
+import 'dart:typed_data' as _i7;
 
 import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart'
     as _i4;
@@ -37,6 +38,16 @@ class _FakeSecurityContext_0 extends _i1.SmartFake
 class _FakeMqttServerClient_1 extends _i1.SmartFake
     implements _i3.MqttServerClient {
   _FakeMqttServerClient_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
+class _FakeDateTime_2 extends _i1.SmartFake implements DateTime {
+  _FakeDateTime_2(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -181,4 +192,64 @@ class MockMqttClient extends _i1.Mock implements _i4.MqttClient {
         ),
         returnValueForMissingStub: null,
       );
+}
+
+/// A class which mocks [X509Certificate].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockX509Certificate extends _i1.Mock implements _i2.X509Certificate {
+  @override
+  _i7.Uint8List get der => (super.noSuchMethod(
+        Invocation.getter(#der),
+        returnValue: _i7.Uint8List(0),
+        returnValueForMissingStub: _i7.Uint8List(0),
+      ) as _i7.Uint8List);
+  @override
+  String get pem => (super.noSuchMethod(
+        Invocation.getter(#pem),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
+  _i7.Uint8List get sha1 => (super.noSuchMethod(
+        Invocation.getter(#sha1),
+        returnValue: _i7.Uint8List(0),
+        returnValueForMissingStub: _i7.Uint8List(0),
+      ) as _i7.Uint8List);
+  @override
+  String get subject => (super.noSuchMethod(
+        Invocation.getter(#subject),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
+  String get issuer => (super.noSuchMethod(
+        Invocation.getter(#issuer),
+        returnValue: '',
+        returnValueForMissingStub: '',
+      ) as String);
+  @override
+  DateTime get startValidity => (super.noSuchMethod(
+        Invocation.getter(#startValidity),
+        returnValue: _FakeDateTime_2(
+          this,
+          Invocation.getter(#startValidity),
+        ),
+        returnValueForMissingStub: _FakeDateTime_2(
+          this,
+          Invocation.getter(#startValidity),
+        ),
+      ) as DateTime);
+  @override
+  DateTime get endValidity => (super.noSuchMethod(
+        Invocation.getter(#endValidity),
+        returnValue: _FakeDateTime_2(
+          this,
+          Invocation.getter(#endValidity),
+        ),
+        returnValueForMissingStub: _FakeDateTime_2(
+          this,
+          Invocation.getter(#endValidity),
+        ),
+      ) as DateTime);
 }

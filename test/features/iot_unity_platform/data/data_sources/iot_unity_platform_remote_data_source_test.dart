@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,6 +18,7 @@ import 'iot_unity_platform_remote_data_source_test.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<MqttClient>(),
+  MockSpec<X509Certificate>(),
 ])
 void main() {
   late MockMqttClient mockMqttClient;
@@ -47,42 +49,6 @@ void main() {
     humidity: 1.0,
     temperature: 1.0,
   );
-
-  // bool testOnBadCertificateSupplied(X509Certificate certificate) =>
-  //     throw BadCertificateException(
-  //       message: sprintf(
-  //         res.badCertificateExceptionMessage,
-  //         [
-  //           certificate,
-  //         ],
-  //       ),
-  //     );
-
-  // void testOnSubscribedToTopic(
-  //   String topicName,
-  // ) {
-  //   return;
-  // }
-
-  // void testOnSubscriptionToTopicFailed(
-  //   String topicName,
-  // ) =>
-  //     throw TopicSubscriptionException(
-  //       message: sprintf(
-  //         res.topicSubscriptionExceptionMessage,
-  //         [
-  //           topicName,
-  //         ],
-  //       ),
-  //     );
-
-  // void testOnDisconnectedFromBroker() =>
-  //     throw UnsolicitedDisconnectionException(
-  //       message: sprintf(
-  //         res.unsolicitedDisconnectionExceptionMessage,
-  //         const <String>[],
-  //       ),
-  //     );
 
   group(
     'getDataFromIotUnityPlatform',
@@ -197,7 +163,7 @@ void main() {
 
           test(
             '''
-              should expect a [CouldNotConnectToBrokerException] error when the
+              should expect a [CouldNotConnectToBrokerException] when the
               connection status gotten as a result of invoking
               [MqttClient.connectToBroker] is [MqttConnectionState.disconnecting]
             ''',
@@ -226,7 +192,7 @@ void main() {
 
           test(
             '''
-              should expect a [CouldNotConnectToBrokerException] error when the
+              should expect a [CouldNotConnectToBrokerException] when the
               connection status gotten as a result of invoking
               [MqttClient.connectToBroker] is [MqttConnectionState.disconnected]
             ''',
@@ -255,7 +221,7 @@ void main() {
 
           test(
             '''
-              should expect a [CouldNotConnectToBrokerException] error when the
+              should expect a [CouldNotConnectToBrokerException] when the
               connection status gotten as a result of invoking
               [MqttClient.connectToBroker] is [MqttConnectionState.faulted]
             ''',
@@ -284,7 +250,7 @@ void main() {
 
           test(
             '''
-              should expect a [CouldNotConnectToBrokerException] error when the
+              should expect a [CouldNotConnectToBrokerException] when the
               connection status gotten as a result of invoking
               [MqttClient.connectToBroker] is null
             ''',
@@ -312,62 +278,172 @@ void main() {
             },
           );
 
-          // group(
-          //   'connectToBroker success',
-          //   () {
-          //     setUp(
-          //       () async {
-          //         final expectedAnswer =
-          //             mqtt_client.MqttClientConnectionStatus()
-          //               ..state = mqtt_client.MqttConnectionState.connected;
-          //         when(
-          //           mockMqttClient.connectToBroker(),
-          //         ).thenAnswer(
-          //           (_) async => expectedAnswer,
-          //         );
-          //       },
-          //     );
-          //
-          //     test(
-          //       '''
-          //         should subscribe to a desired topic by calling [MqttClient.subscribeToTopic]
-          //         when the connection to AWS IoT Core broker is successful
-          //       ''',
-          //       () {
-          //         verify(
-          //           mockMqttClient.subscribeToTopic(
-          //             topicName: testTopicName,
-          //             qualityOfService: testQualityOfService,
-          //           ),
-          //         ).called(1);
-          //       },
-          //     );
-          //   },
-          // );
+          test(
+            '''
+              should expect a [CouldNotConnectToBrokerException] when any other
+              exception is gotten as a result of invoking
+              [MqttClient.connectToBroker]
+            ''',
+            () {
+              when(
+                mockMqttClient.connectToBroker(),
+              ).thenThrow(
+                Exception(),
+              );
+
+              final result = iotUnityPlatformRemoteDataSourceImplementation
+                  .getDataFromIotUnityPlatform(
+                topicName: testTopicName,
+              );
+
+              expectLater(
+                result,
+                emitsError(
+                  const TypeMatcher<CouldNotConnectToBrokerException>(),
+                ),
+              );
+            },
+          );
+
+          group(
+            'onBadCertificateSupplied',
+            () {
+              late StreamController<IotUnityPlatformModel> streamController;
+              late MockX509Certificate mockX509Certificate;
+
+              setUp(
+                () {
+                  streamController = StreamController<IotUnityPlatformModel>();
+                  mockX509Certificate = MockX509Certificate();
+                },
+              );
+
+              test(
+                '''
+                  should emit a [BadCertificateException] and then return false
+                  when onBadCertificateSupplied is called
+                ''',
+                () {
+                  final result = iotUnityPlatformRemoteDataSourceImplementation
+                      .onBadCertificateSupplied(
+                    mockX509Certificate,
+                    streamController.sink,
+                  );
+
+                  expect(
+                    result,
+                    false,
+                  );
+
+                  expectLater(
+                    streamController.stream,
+                    emitsError(
+                      const TypeMatcher<BadCertificateException>(),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+
+          group(
+            'onConnectedToBroker',
+            () {
+              test(
+                '''
+                  should call [MqttClient.subscribeToTopic] with the appropriate
+                  topic name and a QoS value of 0 when onConnectedToBroker is
+                  called
+                ''',
+                () {
+                  iotUnityPlatformRemoteDataSourceImplementation
+                      .onConnectedToBroker(
+                    testTopicName,
+                  );
+
+                  verify(
+                    mockMqttClient.subscribeToTopic(
+                      topicName: testTopicName,
+                      qualityOfService: mqtt_client.MqttQos.atMostOnce,
+                    ),
+                  ).called(1);
+                  verifyNoMoreInteractions(
+                    mockMqttClient,
+                  );
+                },
+              );
+            },
+          );
+
+          group(
+            'onSubscribedToTopic',
+            () {
+              late StreamController<IotUnityPlatformModel> streamController;
+
+              setUp(
+                () {
+                  streamController = StreamController<IotUnityPlatformModel>();
+                },
+              );
+
+              // group(
+              //   '[MqttClient.messagesFromBroker] is not null',
+              //   () {
+              //     // Stream<
+              //     //     List<
+              //     //         mqtt_client.MqttReceivedMessage<
+              //     //             mqtt_client.MqttMessage>>>? messagesFromBroker;
+              //
+              //     setUp(
+              //       () {
+              //         // messagesFromBroker = mockMqttClient.messagesFromBroker;
+              //       },
+              //     );
+              //
+              //     test(
+              //       '''
+              //         should emit a [MessageTopicMismatchException] if the topic
+              //         a message was received on does not correspond to the
+              //         desired topic when [MqttClient.messagesFromBroker]
+              //         is listened on
+              //       ''',
+              //       () {},
+              //     );
+              //   },
+              // );
+
+              test(
+                '''
+                  should emit [NoMessagesFromBrokerException] when
+                  [MqttClient.messagesFromBroker] is null
+                ''',
+                () {
+                  when(mockMqttClient.messagesFromBroker).thenAnswer(
+                    (_) => null,
+                  );
+                  final result = iotUnityPlatformRemoteDataSourceImplementation
+                      .onSubscribedToTopic(
+                    testTopicName,
+                    streamController.sink,
+                  );
+
+                  verify(
+                    mockMqttClient.messagesFromBroker,
+                  );
+                  expectLater(
+                    streamController.stream,
+                    emitsError(
+                      const TypeMatcher<NoMessagesFromBrokerException>(),
+                    ),
+                  );
+
+                  result?.cancel();
+                },
+              );
+            },
+          );
         },
       );
-
-      // group(
-      //   'onCancel',
-      //   () {
-      //     test(
-      //       '''
-      //       ''',
-      //       () {
-      //         final result = iotUnityPlatformRemoteDataSourceImplementation
-      //             .getDataFromIotUnityPlatform(
-      //           topicName: testTopicName,
-      //         );
-      //         // result.listen((_) {})..cancel();
-      //
-      //         expect(
-      //           result,
-      //           emitsDone,
-      //         );
-      //       },
-      //     );
-      //   },
-      // );
     },
   );
 
