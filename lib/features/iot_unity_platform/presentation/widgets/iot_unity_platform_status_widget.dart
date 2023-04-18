@@ -125,12 +125,12 @@ class IotUnityPlatformStatusWidget extends StatelessWidget {
     if (iotUnityPlatformState is GettingDataFromIotUnityPlatformState) {
       text = iotUnityPlatformLoadingLiteral;
     } else if (iotUnityPlatformState is GotDataFromIotUnityPlatformState) {
-      text = iotUnityPlatformOnlineLiteral;
+      text = iotUnityPlatformActiveLiteral;
     } else if (iotUnityPlatformState
         is FailedToGetDataFromIotUnityPlatformState) {
       text = iotUnityPlatformErrorLiteral;
     } else {
-      text = iotUnityPlatformOfflineLiteral;
+      text = iotUnityPlatformInactiveLiteral;
     }
 
     return text;

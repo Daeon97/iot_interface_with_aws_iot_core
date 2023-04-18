@@ -190,6 +190,7 @@ class IotUnityPlatformRemoteDataSourceImplementation
                   BadMessageFormatException(
                     message: sprintf(
                       badMessageFormatExceptionMessage,
+                      // ignore: inference_failure_on_collection_literal
                       [],
                     ),
                   ),
