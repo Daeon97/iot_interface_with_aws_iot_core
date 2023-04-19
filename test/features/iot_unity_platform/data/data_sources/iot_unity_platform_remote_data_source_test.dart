@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -6,12 +7,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:iot_interface_with_aws_iot_core/core/clients/mqtt_client.dart';
 import 'package:iot_interface_with_aws_iot_core/core/errors/custom_exception.dart';
+import 'package:iot_interface_with_aws_iot_core/core/resources/numbers.dart';
 import 'package:iot_interface_with_aws_iot_core/core/resources/strings.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/data_sources/iot_unity_platform_remote_data_source.dart';
 import 'package:iot_interface_with_aws_iot_core/features/iot_unity_platform/data/models/iot_unity_platform_model.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mqtt_client/mqtt_client.dart' as mqtt_client;
+import 'package:typed_data/typed_buffers.dart';
 
 import '../../../../fixtures/fixture_reader.dart';
 import 'iot_unity_platform_remote_data_source_test.mocks.dart';
@@ -308,14 +311,18 @@ void main() {
           group(
             'onBadCertificateSupplied',
             () {
-              late StreamController<IotUnityPlatformModel> streamController;
+              final streamController =
+                  StreamController<IotUnityPlatformModel>();
               late MockX509Certificate mockX509Certificate;
 
               setUp(
                 () {
-                  streamController = StreamController<IotUnityPlatformModel>();
                   mockX509Certificate = MockX509Certificate();
                 },
+              );
+
+              tearDown(
+                streamController.close,
               );
 
               test(
@@ -364,7 +371,7 @@ void main() {
                   verify(
                     mockMqttClient.subscribeToTopic(
                       topicName: testTopicName,
-                      qualityOfService: mqtt_client.MqttQos.atMostOnce,
+                      qualityOfService: testQualityOfService,
                     ),
                   ).called(1);
                   verifyNoMoreInteractions(
@@ -378,39 +385,119 @@ void main() {
           group(
             'onSubscribedToTopic',
             () {
-              late StreamController<IotUnityPlatformModel> streamController;
+              final streamController =
+                  StreamController<IotUnityPlatformModel>();
 
-              setUp(
-                () {
-                  streamController = StreamController<IotUnityPlatformModel>();
-                },
+              tearDown(
+                streamController.close,
               );
 
-              // group(
-              //   '[MqttClient.messagesFromBroker] is not null',
-              //   () {
-              //     // Stream<
-              //     //     List<
-              //     //         mqtt_client.MqttReceivedMessage<
-              //     //             mqtt_client.MqttMessage>>>? messagesFromBroker;
-              //
-              //     setUp(
-              //       () {
-              //         // messagesFromBroker = mockMqttClient.messagesFromBroker;
-              //       },
-              //     );
-              //
-              //     test(
-              //       '''
-              //         should emit a [MessageTopicMismatchException] if the topic
-              //         a message was received on does not correspond to the
-              //         desired topic when [MqttClient.messagesFromBroker]
-              //         is listened on
-              //       ''',
-              //       () {},
-              //     );
-              //   },
-              // );
+              group(
+                '[MqttClient.messagesFromBroker] is not null',
+                () {
+                  final messagesFromBrokerStreamController = StreamController<
+                      List<
+                          mqtt_client
+                              .MqttReceivedMessage<mqtt_client.MqttMessage>>>();
+
+                  tearDown(
+                    messagesFromBrokerStreamController.close,
+                  );
+
+                  test(
+                    '''
+                      should emit a [MessageTopicMismatchException] if the topic
+                      a message was received on does not correspond to the
+                      desired topic when [MqttClient.messagesFromBroker]
+                      is listened on
+                    ''',
+                    () {
+                      when(mockMqttClient.messagesFromBroker).thenAnswer(
+                        (_) => messagesFromBrokerStreamController.stream,
+                      );
+
+                      final result =
+                          iotUnityPlatformRemoteDataSourceImplementation
+                              .onSubscribedToTopic(
+                        testTopicName,
+                        streamController.sink,
+                      );
+
+                      final expectedMessages = List.generate(
+                        2,
+                        (index) => IotUnityPlatformModel(
+                          humidity: index == 0 ? 2.toDouble() : 4.toDouble(),
+                          temperature: index == 0 ? 2.toDouble() : 4.toDouble(),
+                        ),
+                      );
+
+                      Uint8Buffer computeUint8Buffer(int index) => Uint8Buffer()
+                        ..addAll(
+                          Uint8List.fromList(
+                            utf8.encode(
+                              json.encode(
+                                {
+                                  'humidity': index + nilDouble,
+                                  'temperature': index + nilDouble,
+                                },
+                              ),
+                            ),
+                          ),
+                        );
+
+                      final receivedMessages = List.generate(
+                        5,
+                        (index) => List.generate(
+                          1,
+                          (_) => mqtt_client.MqttReceivedMessage<
+                              mqtt_client.MqttMessage>(
+                            index % 2 != 0 ? testTopic1 : testTopicName,
+                            mqtt_client.MqttPublishMessage()
+                              ..payload.message = computeUint8Buffer(
+                                index,
+                              ),
+                          ),
+                        ),
+                      );
+
+                      expectLater(
+                        streamController.stream,
+                        emitsInOrder(
+                          [
+                            emitsError(
+                              const TypeMatcher<
+                                  MessageTopicMismatchException>(),
+                            ),
+                            emitsError(
+                              const TypeMatcher<
+                                  MessageTopicMismatchException>(),
+                            ),
+                            expectedMessages.first,
+                            emitsError(
+                              const TypeMatcher<
+                                  MessageTopicMismatchException>(),
+                            ),
+                            expectedMessages.last,
+                          ],
+                        ),
+                      );
+
+                      for (final receivedMessagesList in receivedMessages) {
+                        messagesFromBrokerStreamController.sink.add(
+                          receivedMessagesList,
+                        );
+                      }
+
+                      result?.cancel();
+                    },
+                    timeout: const Timeout(
+                      Duration(
+                        seconds: 5,
+                      ),
+                    ),
+                  );
+                },
+              );
 
               test(
                 '''
