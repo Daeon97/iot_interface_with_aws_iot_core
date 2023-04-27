@@ -490,11 +490,6 @@ void main() {
 
                       result?.cancel();
                     },
-                    timeout: const Timeout(
-                      Duration(
-                        seconds: 5,
-                      ),
-                    ),
                   );
                 },
               );
